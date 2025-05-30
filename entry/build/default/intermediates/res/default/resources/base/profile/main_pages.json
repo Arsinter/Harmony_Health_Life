@@ -1,0 +1,10 @@
+{
+  "src": [
+    "pages/Login",
+    "pages/Register",
+    "pages/MainPage",
+    "pages/TaskListPage",
+    "pages/TaskEditPage",
+    "pages/CalendarDetailPage"
+  ]
+}

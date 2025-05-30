@@ -1,0 +1,447 @@
+Ôr@Ÿªassertions¤code´customTransformCache¬dependencies¢id¤meta±moduleSideEffects¬originalCode±originalSourcemap«resolvedIds®sourcemapChainµsyntheticNamedExportsµtransformDependencies®transformFiles¨cacheAstÔrAÚÒexport class CommonConstants {
+}
+CommonConstants.RDB_NAME = { dbName: 'taskInfo.db' }; // db name
+/** day info table */
+CommonConstants.DAY_INFO = {
+    tableName: 'dayInfo',
+    columns: ['date', 'targetTaskNum', 'finTaskNum']
+};
+/** global info table */
+CommonConstants.GLOBAL_INFO = {
+    tableName: 'globalInfo',
+    columns: ['id', 'firstDate', 'lastDate', 'checkInDays', 'achievements']
+};
+/** task info table */
+CommonConstants.TASK_INFO = {
+    tableName: 'taskInfo',
+    columns: [
+        'id',
+        'date',
+        'taskID',
+        'targetValue',
+        'isAlarm',
+        'startTime',
+        'endTime',
+        'frequency',
+        'isDone',
+        'finValue',
+        'isOpen'
+    ]
+};
+/** form info table */
+CommonConstants.FORM_INFO = {
+    tableName: 'formInfo',
+    columns: ['id', 'formId', 'formName', 'formDimension']
+};
+// TaskNum
+//åº”è¯¥æ˜¯6+1+1+1äº†
+//static readonly TASK_NUM = 6;
+//static readonly TASK_NUM = 7;
+CommonConstants.TASK_NUM = 9;
+// THOUSANDTH
+CommonConstants.THOUSANDTH_15 = '1.5%'; // â€˜1.5%â€™
+CommonConstants.THOUSANDTH_12 = '2.2%'; // â€˜2.2%â€™
+CommonConstants.THOUSANDTH_33 = '3.3%'; // â€˜3.3%â€™
+CommonConstants.THOUSANDTH_50 = '5%'; // â€˜5%â€™
+CommonConstants.THOUSANDTH_66 = '6.6%'; // â€˜6.6%â€™
+CommonConstants.THOUSANDTH_80 = '8%'; // â€˜8%â€™
+CommonConstants.THOUSANDTH_100 = '10%'; // â€˜10%â€™
+CommonConstants.THOUSANDTH_120 = '12%'; // â€˜12%â€™
+CommonConstants.THOUSANDTH_160 = '16%'; // â€˜16%â€™
+CommonConstants.THOUSANDTH_400 = '40%'; // â€˜40%â€™
+CommonConstants.THOUSANDTH_420 = '42%'; // â€˜42%â€™
+CommonConstants.THOUSANDTH_500 = '50%'; // â€˜50%â€™
+CommonConstants.THOUSANDTH_560 = '56%'; // â€˜56%â€™
+CommonConstants.THOUSANDTH_800 = '80%'; // â€˜80%â€™
+CommonConstants.THOUSANDTH_830 = '83%'; // â€˜83%â€™
+CommonConstants.THOUSANDTH_880 = '88%'; // â€˜88%â€™
+CommonConstants.THOUSANDTH_900 = '90%'; // â€˜90%â€™
+CommonConstants.THOUSANDTH_940 = '94%'; // â€˜90%â€™
+CommonConstants.THOUSANDTH_1000 = '100%'; // â€˜100%â€™
+CommonConstants.DEFAULT_2 = 2;
+CommonConstants.DEFAULT_6 = 6;
+CommonConstants.DEFAULT_8 = 8;
+CommonConstants.DEFAULT_12 = 12;
+CommonConstants.DEFAULT_10 = 10;
+CommonConstants.DEFAULT_16 = 16;
+CommonConstants.DEFAULT_18 = 18;
+CommonConstants.DEFAULT_20 = 20;
+CommonConstants.DEFAULT_24 = 24;
+CommonConstants.DEFAULT_28 = 28;
+CommonConstants.DEFAULT_32 = 32;
+CommonConstants.DEFAULT_48 = 48;
+CommonConstants.DEFAULT_56 = 56;
+CommonConstants.DEFAULT_60 = 60;
+CommonConstants.DEFAULT_100 = 100;
+CommonConstants.DEFAULT_180 = 180;
+// fontWeight
+CommonConstants.FONT_WEIGHT_400 = 400;
+CommonConstants.FONT_WEIGHT_500 = 500;
+CommonConstants.FONT_WEIGHT_700 = 700;
+CommonConstants.FONT_WEIGHT_900 = 900;
+// opacity
+CommonConstants.OPACITY_4 = 0.4;
+CommonConstants.OPACITY_6 = 0.6;
+// radius
+CommonConstants.BORDER_RADIUS_PERCENT_50 = '50%';
+// duration
+CommonConstants.AD_DURATION = 5; // 5s
+CommonConstants.LAUNCHER_DELAY_TIME = 2000; // 2000ms
+CommonConstants.DURATION_1000 = 1000; // 1000ms
+CommonConstants.DURATION_800 = 800; // 700ms
+CommonConstants.DURATION_100 = 100; // 100ms
+// list space
+CommonConstants.LIST_ITEM_SPACE = 2;
+CommonConstants.SPACE_4 = 4;
+// navigation title
+CommonConstants.ADD_TASK_TITLE = 'æ·»åŠ ä»»åŠ¡';
+CommonConstants.EDIT_TASK_TITLE = 'ç¼–è¾‘ä»»åŠ¡';
+// prompt message
+CommonConstants.SETTING_FINISHED_MESSAGE = 'è®¾ç½®å®Œæˆï¼ï¼ï¼';
+CommonConstants.SETTING_FINISH_FAILED_MESSAGE = 'ç½‘ç»œè¿æ¥é”™è¯¯';
+CommonConstants.CHOOSE_TIME_OUT_RANGE = 'é€‰æ‹©æ—¶é—´è¶…å‡ºèŒƒå›´';
+CommonConstants.NICK_NAME = 'JoIin';
+CommonConstants.SIGNATURE = 'è¿™æ˜¯ä¸€æ¡ç®€çŸ­åœ°ä¸ªäººç­¾';
+CommonConstants.HOME_BTN_Z = 2;
+// time range
+CommonConstants.DEFAULT_TIME = '08:00';
+CommonConstants.GET_UP_TIME_RANGE = '(06:00 - 09:00)';
+CommonConstants.SLEEP_TIME_RANGE = '(20:00 - 23:00)';
+CommonConstants.GET_UP_EARLY_TIME = '06:00';
+CommonConstants.GET_UP_LATE_TIME = '09:00';
+CommonConstants.SLEEP_EARLY_TIME = '20:00';
+CommonConstants.SLEEP_LATE_TIME = '23:00';
+// frequency Dialog
+CommonConstants.EVERYDAY = 'æ¯å¤©';
+CommonConstants.NO_LENGTH = 0;
+CommonConstants.INIT_WEEK_IDS = '1, 2, 3, 4, 5, 6, 7';
+// unit
+CommonConstants.PER_DAY = '/ å¤©';
+// global data key
+CommonConstants.GLOBAL_KEY = 'global';
+// RemindContent
+CommonConstants.GET_UP_TASK_NAME = 'æ—©èµ·';
+//æ–°å¢è‡ªå®šä¹‰
+CommonConstants.Custom_TASK_NAME = 'è‡ªå®šä¹‰æ—¶é—´ç±»ä»»åŠ¡';
+CommonConstants.Custom2_TASK_NAME = 'è‡ªå®šä¹‰æ¬¡æ•°ç±»ä»»åŠ¡';
+CommonConstants.DRINK_TASK_NAME = 'å–æ°´';
+//æ–°å¢è·‘æ­¥
+CommonConstants.RUN_TASK_NAME = 'æ¯æ—¥è·‘æ­¥';
+CommonConstants.EAT_APPLE_TASK_NAME = 'åƒè‹¹æœ';
+CommonConstants.SMILE_TASK_NAME = 'æ¯æ—¥å¾®ç¬‘';
+CommonConstants.BRUSH_TEETH_TASK_NAME = 'æ¯æ—¥åˆ·ç‰™';
+CommonConstants.SLEEP_TASK_NAME = 'æ—©ç¡';
+CommonConstants.GET_UP_CONTENT = 'è¯¥æ—©èµ·å•¦';
+//æ–°å¢è‡ªå®šä¹‰
+CommonConstants.Custom_CONTENT = 'è¯¥åšè‡ªå®šä¹‰æ—¶é—´ç±»ä»»åŠ¡å•¦!';
+CommonConstants.Custom2_CONTENT = 'è¯¥åšè‡ªå®šä¹‰æ¬¡æ•°ç±»ä»»åŠ¡å•¦!';
+CommonConstants.DRINK_CONTENT = 'è¯¥å–æ°´å•¦';
+CommonConstants.EAT_APPLE_CONTENT = 'è¯¥åƒè‹¹æœå•¦';
+CommonConstants.SMILE_CONTENT = 'è¯·ä¿æŒå¾®ç¬‘';
+CommonConstants.BRUSH_TEETH_CONTENT = 'æ¯æ—¥åˆ·ç‰™';
+//æ–°å¢è·‘æ­¥
+CommonConstants.RUN_CONTENT = 'è¯¥è·‘æ­¥å•¦';
+CommonConstants.SLEEP_CONTENT = 'æ—©ç¡';
+CommonConstants.H_STORE = 'healthAppStore';
+CommonConstants.REMINDER_AGENT_TAG = 'reminderAgent';
+CommonConstants.PACKAGE_NAME = 'com.example.healthy_life';
+CommonConstants.ENTRY_ABILITY = 'EntryAbility';
+// offset
+CommonConstants.ZERO = 0;
+CommonConstants.MINUS_20 = -20;
+CommonConstants.HAS_NO_INDEX = -1;
+CommonConstants.OFFSET_24 = -24;
+// targetSetting Range
+CommonConstants.SMILE_STEP = 1;
+CommonConstants.SMILE_MAX_RANGE = 3;
+CommonConstants.BRUSH_TEETH_STEP = 1;
+CommonConstants.BRUSH_TEETH_MAX_RANGE = 3;
+CommonConstants.DRINK_STEP = 25;
+CommonConstants.DRINK_MAX_RANGE = 500;
+CommonConstants.TIMES_50 = 50;
+CommonConstants.TIMES_100 = 100;
+CommonConstants.EAT_APPLE_RANGE = 100;
+// letter spacing
+CommonConstants.LETTER_1 = 0.1;
+CommonConstants.LETTER_34 = 3.4;
+// achievement
+CommonConstants.ACHIEVE_CARD_IMG_HEIGHT = 88;
+CommonConstants.ACHIEVE_CARD_TOP = 38;
+CommonConstants.ACHIEVE_CARD_BOTTOM = 10;
+CommonConstants.ACHIEVE_SPLIT_RATIO = 1 / 3;
+CommonConstants.ACHIEVE_TITLE_BAR_LEFT = 20;
+CommonConstants.ACHIEVE_TITLE_BAR_TOP = 15;
+CommonConstants.FULL_WIDTH = '100%';
+CommonConstants.FULL_HEIGHT = '100%';
+CommonConstants.WEEK_DAY_NUM = 7; // number days of one week
+CommonConstants.WEEK_DAY_TIME = 7 * 24 * 60 * 60 * 1000;
+// Card Constants
+CommonConstants.TAG = "UpdateFormUtils";
+CommonConstants.FORM_PARAM_IDENTITY_KEY = "ohos.extra.param.key.form_identity";
+CommonConstants.FORM_PARAM_DIMENSION_KEY = "ohos.extra.param.key.form_dimension";
+CommonConstants.FORM_PARAM_NAME_KEY = "ohos.extra.param.key.form_name";
+CommonConstants.DEFAULT_DIMENSION_2X2 = 2;
+CommonConstants.DEFAULT_DIMENSION_2X4 = 3;
+CommonConstants.WIDGET_NAME_AGENCY = "agency";
+CommonConstants.WIDGET_NAME_PROGRESS = "progress";
+export var TaskType;
+(function (TaskType) {
+    TaskType["Getup"] = "getup";
+    TaskType["Drink"] = "drink";
+    TaskType["Apple"] = "apple";
+    TaskType["Smile"] = "smile";
+    TaskType["Clean"] = "clean";
+    TaskType["Sleep"] = "sleep";
+    //æ–°å¢è·‘æ­¥
+    TaskType["Run"] = "run";
+    //æ–°å¢è‡ªå®šä¹‰æ—¶é—´ç±»
+    TaskType["Custom"] = "custom";
+    //æ–°å¢è‡ªå®šä¹‰æ¬¡æ•°ç±»
+    TaskType["Custom2"] = "custom2";
+})(TaskType || (TaskType = {}));
+export var Unit;
+(function (Unit) {
+    Unit["Liter"] = "L";
+    Unit["Pcs"] = "\u4E2A";
+    Unit["Times"] = "\u6B21";
+    Unit["Empty"] = "";
+    //æ–°å¢
+    Unit["Kile"] = "\u516C\u91CC";
+})(Unit || (Unit = {}));
+//# sourceMappingURL=CommonConstants.js.mapÂÙ[C:\Users\Fanful\IdeaProjects\Health\entry\src\main\ets\common\constants\CommonConstants.etsÔrB›ªmoduleName±isLocalDependency¯isNodeEntryFile§pkgPath±belongProjectPath§pkgNameªpkgVersion±dependencyPkgInfo°belongModulePath¯hostModulesInfo¬shouldEmitJs¥entryÃÂÙ)C:\Users\Fanful\IdeaProjects\Health\entryÙ#C:\Users\Fanful\IdeaProjects\Health¥entry¥1.0.0Ô  Ù)C:\Users\Fanful\IdeaProjects\Health\entryÜ (ÔrC’²hostDependencyName®hostModuleNameÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryC¼../constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryC¿../../constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryC¿../../constants/CommonConstants¥entryC¿../../constants/CommonConstants¥entryC¿../../constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryCÙ'../..//common/constants/CommonConstants¥entryCÙ#../common/constants/CommonConstants¥entryCÙ&../../common/constants/CommonConstants¥entryÃÃÚ%]/*
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License,Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import CommonConstantsInfo from '../../viewmodel/CommonConstantsInfo';
+
+export class CommonConstants {
+  static readonly RDB_NAME = { dbName: 'taskInfo.db' } as CommonConstantsInfo; // db name
+
+  /** day info table */
+  static readonly DAY_INFO = {
+    tableName: 'dayInfo',
+    columns: ['date', 'targetTaskNum', 'finTaskNum']
+  } as CommonConstantsInfo
+  /** global info table */
+  static readonly GLOBAL_INFO = {
+    tableName: 'globalInfo',
+    columns: ['id', 'firstDate', 'lastDate', 'checkInDays', 'achievements']
+  } as CommonConstantsInfo
+  /** task info table */
+  static readonly TASK_INFO = {
+    tableName: 'taskInfo',
+    columns: [
+      'id',
+      'date',
+      'taskID',
+      'targetValue',
+      'isAlarm',
+      'startTime',
+      'endTime',
+      'frequency',
+      'isDone',
+      'finValue',
+      'isOpen'
+    ]
+  } as CommonConstantsInfo
+  /** form info table */
+  static readonly FORM_INFO = {
+    tableName: 'formInfo',
+    columns: ['id', 'formId', 'formName', 'formDimension']
+  } as CommonConstantsInfo
+  // TaskNum
+  //åº”è¯¥æ˜¯6+1+1+1äº†
+  //static readonly TASK_NUM = 6;
+  //static readonly TASK_NUM = 7;
+  static readonly TASK_NUM = 9;
+  // THOUSANDTH
+  static readonly THOUSANDTH_15: string = '1.5%'; // â€˜1.5%â€™
+  static readonly THOUSANDTH_12: string = '2.2%'; // â€˜2.2%â€™
+  static readonly THOUSANDTH_33: string = '3.3%'; // â€˜3.3%â€™
+  static readonly THOUSANDTH_50: string = '5%'; // â€˜5%â€™
+  static readonly THOUSANDTH_66: string = '6.6%'; // â€˜6.6%â€™
+  static readonly THOUSANDTH_80: string = '8%'; // â€˜8%â€™
+  static readonly THOUSANDTH_100: string = '10%'; // â€˜10%â€™
+  static readonly THOUSANDTH_120: string = '12%'; // â€˜12%â€™
+  static readonly THOUSANDTH_160: string = '16%'; // â€˜16%â€™
+  static readonly THOUSANDTH_400: string = '40%'; // â€˜40%â€™
+  static readonly THOUSANDTH_420: string = '42%'; // â€˜42%â€™
+  static readonly THOUSANDTH_500: string = '50%'; // â€˜50%â€™
+  static readonly THOUSANDTH_560: string = '56%'; // â€˜56%â€™
+  static readonly THOUSANDTH_800: string = '80%'; // â€˜80%â€™
+  static readonly THOUSANDTH_830: string = '83%'; // â€˜83%â€™
+  static readonly THOUSANDTH_880: string = '88%'; // â€˜88%â€™
+  static readonly THOUSANDTH_900: string = '90%'; // â€˜90%â€™
+  static readonly THOUSANDTH_940: string = '94%'; // â€˜90%â€™
+  static readonly THOUSANDTH_1000: string = '100%'; // â€˜100%â€™
+
+  static readonly DEFAULT_2: number = 2;
+  static readonly DEFAULT_6: number = 6;
+  static readonly DEFAULT_8: number = 8;
+  static readonly DEFAULT_12: number = 12;
+  static readonly DEFAULT_10: number = 10;
+  static readonly DEFAULT_16: number = 16;
+  static readonly DEFAULT_18: number = 18;
+  static readonly DEFAULT_20: number = 20;
+  static readonly DEFAULT_24: number = 24;
+  static readonly DEFAULT_28: number = 28;
+  static readonly DEFAULT_32: number = 32;
+  static readonly DEFAULT_48: number = 48;
+  static readonly DEFAULT_56: number = 56;
+  static readonly DEFAULT_60: number = 60;
+  static readonly DEFAULT_100: number = 100;
+  static readonly DEFAULT_180: number = 180;
+  // fontWeight
+  static readonly FONT_WEIGHT_400: number = 400;
+  static readonly FONT_WEIGHT_500: number = 500;
+  static readonly FONT_WEIGHT_700: number = 700;
+  static readonly FONT_WEIGHT_900: number = 900;
+  // opacity
+  static readonly OPACITY_4: number = 0.4;
+  static readonly OPACITY_6: number = 0.6;
+  // radius
+  static readonly BORDER_RADIUS_PERCENT_50: string = '50%';
+  // duration
+  static readonly AD_DURATION: number = 5; // 5s
+  static readonly LAUNCHER_DELAY_TIME: number = 2000; // 2000ms
+  static readonly DURATION_1000: number = 1000; // 1000ms
+  static readonly DURATION_800: number = 800; // 700ms
+  static readonly DURATION_100: number = 100; // 100ms
+
+
+  // list space
+  static readonly LIST_ITEM_SPACE: number = 2;
+  static readonly SPACE_4: number = 4;
+  // navigation title
+  static readonly ADD_TASK_TITLE: string = 'æ·»åŠ ä»»åŠ¡';
+  static readonly EDIT_TASK_TITLE: string = 'ç¼–è¾‘ä»»åŠ¡';
+  // prompt message
+  static readonly SETTING_FINISHED_MESSAGE = 'è®¾ç½®å®Œæˆï¼ï¼ï¼';
+  static readonly SETTING_FINISH_FAILED_MESSAGE = 'ç½‘ç»œè¿æ¥é”™è¯¯';
+  static readonly CHOOSE_TIME_OUT_RANGE: string = 'é€‰æ‹©æ—¶é—´è¶…å‡ºèŒƒå›´';
+  static readonly NICK_NAME = 'JoIin';
+  static readonly SIGNATURE = 'è¿™æ˜¯ä¸€æ¡ç®€çŸ­åœ°ä¸ªäººç­¾';
+  static readonly HOME_BTN_Z = 2;
+  // time range
+  static readonly DEFAULT_TIME: string = '08:00';
+  static readonly GET_UP_TIME_RANGE: string = '(06:00 - 09:00)';
+  static readonly SLEEP_TIME_RANGE: string = '(20:00 - 23:00)';
+  static readonly GET_UP_EARLY_TIME: string = '06:00';
+  static readonly GET_UP_LATE_TIME: string = '09:00';
+  static readonly SLEEP_EARLY_TIME: string = '20:00';
+  static readonly SLEEP_LATE_TIME: string = '23:00';
+  // frequency Dialog
+  static readonly EVERYDAY: string = 'æ¯å¤©';
+  static readonly NO_LENGTH: number = 0;
+  static readonly INIT_WEEK_IDS: string = '1, 2, 3, 4, 5, 6, 7';
+  // unit
+  static readonly PER_DAY: string = '/ å¤©';
+  // global data key
+  static readonly GLOBAL_KEY: string = 'global';
+  // RemindContent
+  static readonly GET_UP_TASK_NAME: string = 'æ—©èµ·';
+  //æ–°å¢è‡ªå®šä¹‰
+  static readonly Custom_TASK_NAME: string = 'è‡ªå®šä¹‰æ—¶é—´ç±»ä»»åŠ¡';
+  static readonly Custom2_TASK_NAME: string = 'è‡ªå®šä¹‰æ¬¡æ•°ç±»ä»»åŠ¡';
+  static readonly DRINK_TASK_NAME: string = 'å–æ°´';
+  //æ–°å¢è·‘æ­¥
+  static readonly RUN_TASK_NAME: string = 'æ¯æ—¥è·‘æ­¥';
+  static readonly EAT_APPLE_TASK_NAME: string = 'åƒè‹¹æœ';
+  static readonly SMILE_TASK_NAME: string = 'æ¯æ—¥å¾®ç¬‘';
+  static readonly BRUSH_TEETH_TASK_NAME: string = 'æ¯æ—¥åˆ·ç‰™';
+  static readonly SLEEP_TASK_NAME: string = 'æ—©ç¡';
+  static readonly GET_UP_CONTENT: string = 'è¯¥æ—©èµ·å•¦';
+  //æ–°å¢è‡ªå®šä¹‰
+  static readonly Custom_CONTENT: string = 'è¯¥åšè‡ªå®šä¹‰æ—¶é—´ç±»ä»»åŠ¡å•¦!';
+  static readonly Custom2_CONTENT: string = 'è¯¥åšè‡ªå®šä¹‰æ¬¡æ•°ç±»ä»»åŠ¡å•¦!';
+  static readonly DRINK_CONTENT: string = 'è¯¥å–æ°´å•¦';
+  static readonly EAT_APPLE_CONTENT: string = 'è¯¥åƒè‹¹æœå•¦';
+  static readonly SMILE_CONTENT: string = 'è¯·ä¿æŒå¾®ç¬‘';
+  static readonly BRUSH_TEETH_CONTENT: string = 'æ¯æ—¥åˆ·ç‰™';
+  //æ–°å¢è·‘æ­¥
+  static readonly RUN_CONTENT: string = 'è¯¥è·‘æ­¥å•¦';
+  static readonly SLEEP_CONTENT: string = 'æ—©ç¡';
+  static readonly H_STORE: string = 'healthAppStore';
+  static readonly REMINDER_AGENT_TAG: string = 'reminderAgent';
+  static readonly PACKAGE_NAME: string = 'com.example.healthy_life';
+  static readonly ENTRY_ABILITY: string = 'EntryAbility';
+  // offset
+  static readonly ZERO: number = 0;
+  static readonly MINUS_20: number = -20;
+  static readonly HAS_NO_INDEX: number = -1;
+  static readonly OFFSET_24: number = -24;
+  // targetSetting Range
+  static readonly SMILE_STEP: number = 1;
+  static readonly SMILE_MAX_RANGE: number = 3;
+  static readonly BRUSH_TEETH_STEP: number = 1;
+  static readonly BRUSH_TEETH_MAX_RANGE: number = 3;
+  static readonly DRINK_STEP: number = 25;
+  static readonly DRINK_MAX_RANGE: number = 500;
+  static readonly TIMES_50: number = 50;
+  static readonly TIMES_100: number = 100;
+  static readonly EAT_APPLE_RANGE: number = 100;
+  // letter spacing
+  static readonly LETTER_1: number = 0.1;
+  static readonly LETTER_34: number = 3.4;
+  // achievement
+  static readonly ACHIEVE_CARD_IMG_HEIGHT: number = 88;
+  static readonly ACHIEVE_CARD_TOP: number = 38;
+  static readonly ACHIEVE_CARD_BOTTOM: number = 10;
+  static readonly ACHIEVE_SPLIT_RATIO: number = 1 / 3;
+  static readonly ACHIEVE_TITLE_BAR_LEFT: number = 20;
+  static readonly ACHIEVE_TITLE_BAR_TOP: number = 15;
+  static readonly FULL_WIDTH: string = '100%';
+  static readonly FULL_HEIGHT: string = '100%';
+  static readonly WEEK_DAY_NUM: number = 7; // number days of one week
+
+  static readonly WEEK_DAY_TIME: number = 7 * 24 * 60 * 60 * 1000;
+  // Card Constants
+  static readonly TAG = "UpdateFormUtils";
+  static readonly FORM_PARAM_IDENTITY_KEY = "ohos.extra.param.key.form_identity";
+  static readonly FORM_PARAM_DIMENSION_KEY = "ohos.extra.param.key.form_dimension";
+  static readonly FORM_PARAM_NAME_KEY = "ohos.extra.param.key.form_name";
+  static readonly DEFAULT_DIMENSION_2X2 = 2;
+  static readonly DEFAULT_DIMENSION_2X4 = 3;
+  static readonly WIDGET_NAME_AGENCY = "agency";
+  static readonly WIDGET_NAME_PROGRESS = "progress";
+}
+
+export enum TaskType {
+  Getup = 'getup',
+  Drink = 'drink',
+  Apple = 'apple',
+  Smile = 'smile',
+  Clean = 'clean',
+  Sleep = 'sleep',
+  //æ–°å¢è·‘æ­¥
+  Run = 'run',
+  //æ–°å¢è‡ªå®šä¹‰æ—¶é—´ç±»
+  Custom = 'custom',
+  //æ–°å¢è‡ªå®šä¹‰æ¬¡æ•°ç±»
+  Custom2 = 'custom2'
+}
+
+export enum Unit {
+  Liter = 'L',
+  Pcs = 'ä¸ª',
+  Times = 'æ¬¡',
+  Empty = '',
+  //æ–°å¢
+  Kile = 'å…¬é‡Œ'
+}
+ÀA“ÔrD–§version¤fileªsourceRoot§sources¥names¨mappings²CommonConstants.js ‘³CommonConstants.etsÜ Ò””   ” ” ” ›”  ” ” ” ”# %”% '”2 4”4 ÌM”5 ÌN”6 ÌO”Ì@ ÌY’”  ” “”  ” ” ”” ” ” ” š” ” ” ” ” ” ”% %”' '”3 3”4 4’” ” ’”  ” “”  ” ”  ”” ” ” ” ” ” ” ” ” ” ” ”! !”+ +”- -”: :”< <”ÌJ ÌJ”ÌK ÌK’” ” ’”  ” “”  ” ” ”” ” ” ” “”  ”  ”  ’” !” !
+’” "” "’” #” #’” $” $’” %” %’” &” &’” '” '’” (” (’” )” )’” *” *’” +” +‘” ,’” -” -’”  .” .“”  /” /” /”” 0” 0” 0” 0œ” 1” 1” 1” 1” 1” 1” 1” 1”( 1(”* 1*”9 19”: 1:’” 2” 2’”  3”
+ 3’”  4” 4’”  5” 5!’”  6” 6!•”  7” 7” 7” 7” 7’”  8” 8—”  9” 9”  9*”& 90”' 91”( 92”1 9;—”  :” :”  :*”& :0”' :1”( :2”1 :;—”  ;” ;”  ;*”& ;0”' ;1”( ;2”1 ;;—”  <” <”  <*”$ <.”% </”& <0”- <7—”  =” =”  =*”& =0”' =1”( =2”1 =;—”  >” >”  >*”$ >.”% >/”& >0”- >7—”  ?” ? ”! ?+”& ?0”' ?1”( ?2”0 ?:—”  Ì@” Ì@ ”! Ì@+”& Ì@0”' Ì@1”( Ì@2”0 Ì@:—”  ÌA” ÌA ”! ÌA+”& ÌA0”' ÌA1”( ÌA2”0 ÌA:—”  ÌB” ÌB ”! ÌB+”& ÌB0”' ÌB1”( ÌB2”0 ÌB:—”  ÌC” ÌC ”! ÌC+”& ÌC0”' ÌC1”( ÌC2”0 ÌC:—”  ÌD” ÌD ”! ÌD+”& ÌD0”' ÌD1”( ÌD2”0 ÌD:—”  ÌE” ÌE ”! ÌE+”& ÌE0”' ÌE1”( ÌE2”0 ÌE:—”  ÌF” ÌF ”! ÌF+”& ÌF0”' ÌF1”( ÌF2”0 ÌF:—”  ÌG” ÌG ”! ÌG+”& ÌG0”' ÌG1”( ÌG2”0 ÌG:—”  ÌH” ÌH ”! ÌH+”& ÌH0”' ÌH1”( ÌH2”0 ÌH:—”  ÌI” ÌI ”! ÌI+”& ÌI0”' ÌI1”( ÌI2”0 ÌI:—”  ÌJ” ÌJ ”! ÌJ+”& ÌJ0”' ÌJ1”( ÌJ2”0 ÌJ:—”  ÌK” ÌK!”" ÌK,”( ÌK2”) ÌK3”* ÌK4”3 ÌK=•”  ÌM” ÌM” ÌM&” ÌM'” ÌM(•”  ÌN” ÌN” ÌN&” ÌN'” ÌN(•”  ÌO” ÌO” ÌO&” ÌO'” ÌO(•”  ÌP” ÌP” ÌP'” ÌP)”  ÌP*•”  ÌQ” ÌQ” ÌQ'” ÌQ)”  ÌQ*•”  ÌR” ÌR” ÌR'” ÌR)”  ÌR*•”  ÌS” ÌS” ÌS'” ÌS)”  ÌS*•”  ÌT” ÌT” ÌT'” ÌT)”  ÌT*•”  ÌU” ÌU” ÌU'” ÌU)”  ÌU*•”  ÌV” ÌV” ÌV'” ÌV)”  ÌV*•”  ÌW” ÌW” ÌW'” ÌW)”  ÌW*•”  ÌX” ÌX” ÌX'” ÌX)”  ÌX*•”  ÌY” ÌY” ÌY'” ÌY)”  ÌY*•”  ÌZ” ÌZ” ÌZ'” ÌZ)”  ÌZ*•”  Ì[” Ì[” Ì[(”! Ì[+”" Ì[,•”  Ì\” Ì\” Ì\(”! Ì\+”" Ì\,’”  Ì]” Ì]•”  Ì^” Ì^!”" Ì^,”% Ì^/”& Ì^0•”  Ì_” Ì_!”" Ì_,”% Ì_/”& Ì_0•”  Ì`” Ì`!”" Ì`,”% Ì`/”& Ì`0•”  Ìa” Ìa!”" Ìa,”% Ìa/”& Ìa0’”  Ìb”
+ Ìb•”  Ìc” Ìc” Ìc&” Ìc)”  Ìc*•”  Ìd” Ìd” Ìd&” Ìd)”  Ìd*’”  Ìe”	 Ìe•”  Ìf”( Ìf*”+ Ìf5”0 Ìf:”1 Ìf;’”  Ìg” Ìg—”  Ìh” Ìh” Ìh(” Ìh)”  Ìh*”! Ìh+”& Ìh0—”  Ìi”# Ìi%”& Ìi0”* Ìi4”+ Ìi5”, Ìi6”5 Ìi?—”  Ìj” Ìj”  Ìj*”$ Ìj.”% Ìj/”& Ìj0”/ Ìj9—”  Ìk” Ìk” Ìk)”" Ìk,”# Ìk-”$ Ìk.”, Ìk6—”  Ìl” Ìl” Ìl)”" Ìl,”# Ìl-”$ Ìl.”, Ìl6’”  Ìo” Ìo•”  Ìp” Ìp!”" Ìp,”# Ìp-”$ Ìp.•”  Ìq” Ìq” Ìq$” Ìq%” Ìq&’”  Ìr” Ìr•”  Ìs” Ìs ”! Ìs+”' Ìs1”( Ìs2•”  Ìt” Ìt!”" Ìt,”( Ìt2”) Ìt3’”  Ìu” Ìu•”  Ìv”( Ìv*”+ Ìv-”4 Ìv6”5 Ìv7•”  Ìw”- Ìw/”0 Ìw2”8 Ìw:”9 Ìw;•”  Ìx”% Ìx'”( Ìx2”2 Ìx<”3 Ìx=•”  Ìy” Ìy” Ìy”# Ìy%”$ Ìy&•”  Ìz” Ìz” Ìz”( Ìz*”) Ìz+•”  Ì{” Ì{” Ì{” Ì{ ” Ì{!’”  Ì|” Ì|•”  Ì}” Ì}” Ì})”& Ì}0”' Ì}1•”  Ì~”! Ì~#”$ Ì~.”5 Ì~?”6 Ì~Ì@•”  Ì”  Ì"”# Ì-”4 Ì>”5 Ì?•”  Ì€”! Ì€#”$ Ì€.”+ Ì€5”, Ì€6•”  Ì”  Ì"”# Ì-”* Ì4”+ Ì5•”  Ì‚”  Ì‚"”# Ì‚-”* Ì‚4”+ Ì‚5•”  Ìƒ” Ìƒ!”" Ìƒ,”) Ìƒ3”* Ìƒ4’”  Ì„” Ì„•”  Ì…” Ì…” Ì…%” Ì…)”  Ì…*•”  Ì†” Ì†” Ì†&” Ì†'” Ì†(•”  Ì‡” Ì‡”  Ì‡*”5 Ì‡?”6 Ì‡Ì@’”  Ìˆ” Ìˆ	•”  Ì‰” Ì‰” Ì‰$” Ì‰)”  Ì‰*’”  ÌŠ” ÌŠ•”  Ì‹” Ì‹” Ì‹'”% Ì‹/”& Ì‹0’”  ÌŒ” ÌŒ•”  Ì”  Ì"”# Ì-”' Ì1”( Ì2’”  Ì” Ì	•”  Ì”  Ì"”# Ì-”- Ì7”. Ì8•”  Ì”! Ì#”$ Ì.”. Ì8”/ Ì9•”  Ì‘” Ì‘!”" Ì‘,”& Ì‘0”' Ì‘1’”  Ì’” Ì’•”  Ì“” Ì“”  Ì“*”& Ì“0”' Ì“1•”  Ì””# Ì”%”& Ì”0”+ Ì”5”, Ì”6•”  Ì•” Ì•!”" Ì•,”( Ì•2”) Ì•3•”  Ì–”% Ì–'”( Ì–2”. Ì–8”/ Ì–9•”  Ì—” Ì—!”" Ì—,”& Ì—0”' Ì—1•”  Ì˜” Ì˜ ”! Ì˜+”' Ì˜1”( Ì˜2’”  Ì™” Ì™	•”  Ìš” Ìš ”! Ìš+”/ Ìš9”0 Ìš:•”  Ì›” Ì›!”" Ì›,”0 Ì›:”1 Ì›;•”  Ìœ” Ìœ”  Ìœ*”& Ìœ0”' Ìœ1•”  Ì”! Ì#”$ Ì.”+ Ì5”, Ì6•”  Ì” Ì”  Ì*”' Ì1”( Ì2•”  ÌŸ”# ÌŸ%”& ÌŸ0”, ÌŸ6”- ÌŸ7’”  Ì ” Ì •”  Ì¡” Ì¡” Ì¡(”$ Ì¡.”% Ì¡/•”  Ì¢” Ì¢”  Ì¢*”$ Ì¢.”% Ì¢/•”  Ì£” Ì£” Ì£$”* Ì£4”+ Ì£5•”  Ì¤”" Ì¤$”% Ì¤/”4 Ì¤>”5 Ì¤?•”  Ì¥” Ì¥” Ì¥)”9 Ì¥ÌC”: Ì¥ÌD•”  Ì¦” Ì¦”  Ì¦*”. Ì¦8”/ Ì¦9’”  Ì§”	 Ì§•”  Ì¨” Ì¨” Ì¨!” Ì¨"” Ì¨#–”  Ì©” Ì©” Ì©%” Ì©&” Ì©(” Ì©)–”  Ìª” Ìª” Ìª)”  Ìª*”! Ìª+”" Ìª,–”  Ì«” Ì«” Ì«&” Ì«'” Ì«)”  Ì«*’”  Ì¬” Ì¬•”  Ì­” Ì­” Ì­'” Ì­(” Ì­)•”  Ì®” Ì®!”" Ì®,”# Ì®-”$ Ì®.•”  Ì¯”  Ì¯"”# Ì¯-”$ Ì¯.”% Ì¯/•”  Ì°”% Ì°'”( Ì°2”) Ì°3”* Ì°4•”  Ì±” Ì±” Ì±'” Ì±)”  Ì±*•”  Ì²” Ì²!”" Ì²,”% Ì²/”& Ì²0•”  Ì³” Ì³” Ì³%” Ì³'” Ì³(•”  Ì´” Ì´” Ì´&” Ì´)”  Ì´*•”  Ìµ” Ìµ!”" Ìµ,”% Ìµ/”& Ìµ0’”  Ì¶” Ì¶•”  Ì·” Ì·” Ì·%” Ì·(” Ì·)•”  Ì¸” Ì¸” Ì¸&” Ì¸)”  Ì¸*’”  Ì¹” Ì¹•”  Ìº”' Ìº)”* Ìº4”, Ìº6”- Ìº7•”  Ì»”  Ì»"”# Ì»-”% Ì»/”& Ì»0•”  Ì¼”# Ì¼%”& Ì¼0”( Ì¼2”) Ì¼3—”  Ì½”# Ì½%”& Ì½0”' Ì½1”* Ì½4”+ Ì½5”, Ì½6•”  Ì¾”& Ì¾(”) Ì¾3”+ Ì¾5”, Ì¾6•”  Ì¿”% Ì¿'”( Ì¿2”* Ì¿4”+ Ì¿5•”  ÌÀ” ÌÀ” ÌÀ'”# ÌÀ-”$ ÌÀ.•”  ÌÁ” ÌÁ” ÌÁ(”$ ÌÁ.”% ÌÁ/—”  ÌÂ” ÌÂ” ÌÂ)”  ÌÂ*”! ÌÂ+”" ÌÂ,”< ÌÂÌF”  ÌÄ” ÌÄ”  ÌÄ*”! ÌÄ+”$ ÌÄ.”& ÌÄ0”) ÌÄ3”+ ÌÄ5”. ÌÄ8”0 ÌÄ:”3 ÌÄ=”7 ÌÄÌA”8 ÌÄÌB’”  ÌÅ” ÌÅ•”  ÌÆ” ÌÆ” ÌÆ”' ÌÆ)”( ÌÆ*•”  ÌÇ”' ÌÇ)”* ÌÇ,”ÌN ÌÇÌP”ÌO ÌÇÌQ•”  ÌÈ”( ÌÈ*”+ ÌÈ-”ÌP ÌÈÌR”ÌQ ÌÈÌS•”  ÌÉ”# ÌÉ%”& ÌÉ(”ÌF ÌÉÌH”ÌG ÌÉÌI•”  ÌÊ”% ÌÊ'”( ÌÊ*”) ÌÊ+”* ÌÊ,•”  ÌË”% ÌË'”( ÌË*”) ÌË+”* ÌË,•”  ÌÌ”" ÌÌ$”% ÌÌ'”- ÌÌ/”. ÌÌ0•”  ÌÍ”$ ÌÍ&”' ÌÍ)”1 ÌÍ3”2 ÌÍ4•”  ÌĞ ” ÌĞ” ÌĞ ” ÌĞ” Ìİ“”  ÌĞ ” ÌĞ” ÌĞ“” ÌÑ” ÌÑ”  ÌÑ“” ÌÒ” ÌÒ”  ÌÒ“” ÌÓ” ÌÓ”  ÌÓ“” ÌÔ” ÌÔ”  ÌÔ“” ÌÕ” ÌÕ”  ÌÕ“” ÌÖ” ÌÖ”  ÌÖ’” Ì×”
+ Ì×“” ÌØ” ÌØ” ÌØ’” ÌÙ” ÌÙ“” ÌÚ”! ÌÚ”" ÌÚ’” ÌÛ” ÌÛ“” ÌÜ”# ÌÜ”$ ÌÜ—”  Ìİ ” Ìİ” ÌĞ” ÌĞ” ÌĞ” ÌĞ”  Ìİ•”  Ìß ” Ìß” Ìß ” Ìß” Ìæ“”  Ìß ” Ìß” Ìß“” Ìà” Ìà” Ìà“” Ìá” Ìá” Ìá“” Ìâ” Ìâ” Ìâ“” Ìã” Ìã” Ìã’” Ìä” Ìä“” Ìå”! Ìå”" Ìå—”  Ìæ ” Ìæ” Ìß” Ìß” Ìß” Ìß” ÌæÔrE–§version¤file§sources®sourcesContent¥names¨mappingsÀ‘À‘ÀÜ Ó‘”    ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”  	 ‘”  
+ ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”    ‘”  ! ‘”  " ‘”  # ‘”  $ ‘”  % ‘”  & ‘”  ' ‘”  ( ‘”  ) ‘”  * ‘”  + ‘”  , ‘”  - ‘”  . ‘”  / ‘”  0 ‘”  1 ‘”  2 ‘”  3 ‘”  4 ‘”  5 ‘”  6 ‘”  7 ‘”  8 ‘”  9 ‘”  : ‘”  ; ‘”  < ‘”  = ‘”  > ‘”  ? ‘”  Ì@ ‘”  ÌA ‘”  ÌB ‘”  ÌC ‘”  ÌD ‘”  ÌE ‘”  ÌF ‘”  ÌG ‘”  ÌH ‘”  ÌI ‘”  ÌJ ‘”  ÌK ‘”  ÌL ‘”  ÌM ‘”  ÌN ‘”  ÌO ‘”  ÌP ‘”  ÌQ ‘”  ÌR ‘”  ÌS ‘”  ÌT ‘”  ÌU ‘”  ÌV ‘”  ÌW ‘”  ÌX ‘”  ÌY ‘”  ÌZ ‘”  Ì[ ‘”  Ì\ ‘”  Ì] ‘”  Ì^ ‘”  Ì_ ‘”  Ì` ‘”  Ìa ‘”  Ìb ‘”  Ìc ‘”  Ìd ‘”  Ìe ‘”  Ìf ‘”  Ìg ‘”  Ìh ‘”  Ìi ‘”  Ìj ‘”  Ìk ‘”  Ìl ‘”  Ìm ‘”  Ìn ‘”  Ìo ‘”  Ìp ‘”  Ìq ‘”  Ìr ‘”  Ìs ‘”  Ìt ‘”  Ìu ‘”  Ìv ‘”  Ìw ‘”  Ìx ‘”  Ìy ‘”  Ìz ‘”  Ì{ ‘”  Ì| ‘”  Ì} ‘”  Ì~ ‘”  Ì ‘”  Ì€ ‘”  Ì ‘”  Ì‚ ‘”  Ìƒ ‘”  Ì„ ‘”  Ì… ‘”  Ì† ‘”  Ì‡ ‘”  Ìˆ ‘”  Ì‰ ‘”  ÌŠ ‘”  Ì‹ ‘”  ÌŒ ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì‘ ‘”  Ì’ ‘”  Ì“ ‘”  Ì” ‘”  Ì• ‘”  Ì– ‘”  Ì— ‘”  Ì˜ ‘”  Ì™ ‘”  Ìš ‘”  Ì› ‘”  Ìœ ‘”  Ì ‘”  Ì ‘”  ÌŸ ‘”  Ì  ‘”  Ì¡ ‘”  Ì¢ ‘”  Ì£ ‘”  Ì¤ ‘”  Ì¥ ‘”  Ì¦ ‘”  Ì§ ‘”  Ì¨ ‘”  Ì© ‘”  Ìª ‘”  Ì« ‘”  Ì¬ ‘”  Ì­ ‘”  Ì® ‘”  Ì¯ ‘”  Ì° ‘”  Ì± ‘”  Ì² ‘”  Ì³ ‘”  Ì´ ‘”  Ìµ ‘”  Ì¶ ‘”  Ì· ‘”  Ì¸ ‘”  Ì¹ ‘”  Ìº ‘”  Ì» ‘”  Ì¼ ‘”  Ì½ ‘”  Ì¾ ‘”  Ì¿ ‘”  ÌÀ ‘”  ÌÁ ‘”  ÌÂ ‘”  ÌÃ ‘”  ÌÄ ‘”  ÌÅ ‘”  ÌÆ ‘”  ÌÇ ‘”  ÌÈ ‘”  ÌÉ ‘”  ÌÊ ‘”  ÌË ‘”  ÌÌ ‘”  ÌÍ ‘”  ÌÎ ‘”  ÌÏ ‘”  ÌĞ ‘”  ÌÑ ‘”  ÌÒ ÔrF’§missing¦pluginÃ¦genAbcÂÔ  ÔrG”²dynamicImportCache¹exportAllDeclarationCache»exportNamedDeclarationCache«importCache“ÔrH–¤type¥start£end«declarationªspecifiers¦source¶ExportNamedDeclaration !ÔrI–¤type¥start£end¢idªsuperClass¤body°ClassDeclaration!ÔrJ”¤type¥start£end¤nameªIdentifier¯CommonConstantsÀÔrK”¤type¥start£end¤body©ClassBody!ÀH¶ExportNamedDeclarationÍtÍˆÔrL•¤type¥start£end¬declarations¤kind³VariableDeclarationÍ{Íˆ‘ÔrM•¤type¥start£end¢id¤init²VariableDeclaratorÍÍ‡JªIdentifierÍÍ‡¨TaskTypeÀ£varÀH¶ExportNamedDeclarationÍ$Í4L³VariableDeclarationÍ+Í4‘M²VariableDeclaratorÍ/Í3JªIdentifierÍ/Í3¤UnitÀ£varÀ

@@ -1,0 +1,112 @@
+{
+  "ohos-module-entry": {
+    "SELECT_TARGET": "default",
+    "MODULE_BUILD_DIR": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build",
+    "DEPENDENCY_INFO": {
+      "cjcalendar": "C:\\Users\\Fanful\\IdeaProjects\\Health\\oh_modules\\.ohpm\\cjcalendar@2.3.0\\oh_modules\\cjcalendar",
+      "lunar": "C:\\Users\\Fanful\\IdeaProjects\\Health\\oh_modules\\.ohpm\\lunar@1.0.0\\oh_modules\\lunar"
+    },
+    "TARGETS": {
+      "default": {
+        "SOURCE_ROOT": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\src\\main",
+        "RESOURCES_PATH": [
+          "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\src\\main\\resources"
+        ],
+        "BUILD_PATH": {
+          "OUTPUT_PATH": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\outputs\\default",
+          "INTERMEDIA_PATH": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates",
+          "JS_ASSETS_PATH": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates\\loader_out\\default",
+          "JS_LITE_ASSETS_PATH": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates\\loader_out_lite\\default",
+          "RES_PATH": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates\\res\\default",
+          "RES_PROFILE_PATH": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates\\res\\default\\resources\\base\\profile",
+          "ETS_SUPER_VISUAL_PATH": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\cache\\default\\default@CompileArkTS\\esmodule",
+          "JS_SUPER_VISUAL_PATH": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\cache\\default\\default@CompileJS\\jsbundle",
+          "WORKER_LOADER": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates\\loader\\default\\loader.json",
+          "MANIFEST_JSON": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates\\manifest\\default",
+          "OUTPUT_METADATA_JSON": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates\\hap_metadata\\default\\output_metadata.json",
+          "SOURCE_MAP_DIR": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates\\source_map\\default"
+        },
+        "BUILD_OPTION": {
+          "debuggable": true
+        }
+      }
+    },
+    "BUILD_OPTION": {
+      "default-default": {
+        "debuggable": true,
+        "copyFrom": "default"
+      }
+    },
+    "BUILD_PROFILE_OPT": {
+      "apiType": "stageMode",
+      "buildOption": {},
+      "targets": [
+        {
+          "name": "default",
+          "runtimeOS": "HarmonyOS"
+        }
+      ]
+    },
+    "BUILD_CACHE_DIR": ""
+  },
+  "ohos-project": {
+    "SELECT_PRODUCT_NAME": "default",
+    "MODULE_BUILD_DIR": "C:\\Users\\Fanful\\IdeaProjects\\Health\\build",
+    "BUNDLE_NAME": "com.example.healthy_life",
+    "BUILD_PATH": {
+      "OUTPUT_PATH": "C:\\Users\\Fanful\\IdeaProjects\\Health\\build\\outputs\\default"
+    },
+    "MODULES": [
+      {
+        "name": "entry",
+        "srcPath": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry",
+        "targets": [
+          {
+            "name": "default",
+            "applyToProducts": [
+              "default"
+            ]
+          }
+        ],
+        "belongProjectPath": "C:\\Users\\Fanful\\IdeaProjects\\Health"
+      }
+    ],
+    "PROFILE_OPT": {
+      "app": {
+        "signingConfigs": [],
+        "products": [
+          {
+            "name": "default",
+            "signingConfig": "default",
+            "compatibleSdkVersion": "5.0.0(12)",
+            "runtimeOS": "HarmonyOS"
+          }
+        ]
+      },
+      "modules": [
+        {
+          "name": "entry",
+          "srcPath": "./entry",
+          "targets": [
+            {
+              "name": "default",
+              "applyToProducts": [
+                "default"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "CONFIG_PROPERTIES": {
+      "enableSignTask": true,
+      "skipNativeIncremental": false,
+      "hvigor.keepDependency": true
+    },
+    "OVERALL_PROJECT_PATHS": [
+      "C:\\Users\\Fanful\\IdeaProjects\\Health"
+    ],
+    "BUILD_CACHE_DIR": ""
+  },
+  "version": 1
+}
