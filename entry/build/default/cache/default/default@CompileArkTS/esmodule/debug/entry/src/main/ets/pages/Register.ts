@@ -5,11 +5,11 @@ interface Register_Params {
     username?: string;
     password?: string;
     confirmPassword?: string;
-    email?: string;
     errorMessage?: string;
+    isLoading?: boolean;
 }
-import { UserManager } from "@bundle:com.example.healthy_life/entry/ets/model/UserManager";
 import router from "@ohos:router";
+import { ApiService } from "@bundle:com.example.healthy_life/entry/ets/services/ApiService";
 class Register extends ViewPU {
     constructor(parent, params, __localStorage, elmtId = -1, paramsLambda = undefined, extraInfo) {
         super(parent, __localStorage, elmtId, extraInfo);
@@ -19,8 +19,8 @@ class Register extends ViewPU {
         this.__username = new ObservedPropertySimplePU('', this, "username");
         this.__password = new ObservedPropertySimplePU('', this, "password");
         this.__confirmPassword = new ObservedPropertySimplePU('', this, "confirmPassword");
-        this.__email = new ObservedPropertySimplePU('', this, "email");
         this.__errorMessage = new ObservedPropertySimplePU('', this, "errorMessage");
+        this.__isLoading = new ObservedPropertySimplePU(false, this, "isLoading");
         this.setInitiallyProvidedValue(params);
         this.finalizeConstruction();
     }
@@ -34,11 +34,11 @@ class Register extends ViewPU {
         if (params.confirmPassword !== undefined) {
             this.confirmPassword = params.confirmPassword;
         }
-        if (params.email !== undefined) {
-            this.email = params.email;
-        }
         if (params.errorMessage !== undefined) {
             this.errorMessage = params.errorMessage;
+        }
+        if (params.isLoading !== undefined) {
+            this.isLoading = params.isLoading;
         }
     }
     updateStateVars(params: Register_Params) {
@@ -47,15 +47,15 @@ class Register extends ViewPU {
         this.__username.purgeDependencyOnElmtId(rmElmtId);
         this.__password.purgeDependencyOnElmtId(rmElmtId);
         this.__confirmPassword.purgeDependencyOnElmtId(rmElmtId);
-        this.__email.purgeDependencyOnElmtId(rmElmtId);
         this.__errorMessage.purgeDependencyOnElmtId(rmElmtId);
+        this.__isLoading.purgeDependencyOnElmtId(rmElmtId);
     }
     aboutToBeDeleted() {
         this.__username.aboutToBeDeleted();
         this.__password.aboutToBeDeleted();
         this.__confirmPassword.aboutToBeDeleted();
-        this.__email.aboutToBeDeleted();
         this.__errorMessage.aboutToBeDeleted();
+        this.__isLoading.aboutToBeDeleted();
         SubscriberManager.Get().delete(this.id__());
         this.aboutToBeDeletedInternal();
     }
@@ -80,19 +80,19 @@ class Register extends ViewPU {
     set confirmPassword(newValue: string) {
         this.__confirmPassword.set(newValue);
     }
-    private __email: ObservedPropertySimplePU<string>;
-    get email() {
-        return this.__email.get();
-    }
-    set email(newValue: string) {
-        this.__email.set(newValue);
-    }
     private __errorMessage: ObservedPropertySimplePU<string>;
     get errorMessage() {
         return this.__errorMessage.get();
     }
     set errorMessage(newValue: string) {
         this.__errorMessage.set(newValue);
+    }
+    private __isLoading: ObservedPropertySimplePU<boolean>;
+    get isLoading() {
+        return this.__isLoading.get();
+    }
+    set isLoading(newValue: boolean) {
+        this.__isLoading.set(newValue);
     }
     initialRender() {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
@@ -147,32 +147,6 @@ class Register extends ViewPU {
             // 用户名输入框
             TextInput.onChange((value: string) => {
                 this.username = value;
-            });
-        }, TextInput);
-        this.observeComponentCreation2((elmtId, isInitialRender) => {
-            // 邮箱输入框
-            TextInput.create({ placeholder: '请输入邮箱' });
-            // 邮箱输入框
-            TextInput.width('90%');
-            // 邮箱输入框
-            TextInput.height(50);
-            // 邮箱输入框
-            TextInput.margin({ bottom: 20 });
-            // 邮箱输入框
-            TextInput.backgroundColor(Color.White);
-            // 邮箱输入框
-            TextInput.borderRadius(8);
-            // 邮箱输入框
-            TextInput.padding({ left: 16, right: 16 });
-            // 邮箱输入框
-            TextInput.placeholderColor('#999999');
-            // 邮箱输入框
-            TextInput.placeholderFont({ size: 16 });
-            // 邮箱输入框
-            TextInput.fontSize(16);
-            // 邮箱输入框
-            TextInput.onChange((value: string) => {
-                this.email = value;
             });
         }, TextInput);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
@@ -254,7 +228,7 @@ class Register extends ViewPU {
         If.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             // 注册按钮
-            Button.createWithLabel('注册');
+            Button.createWithLabel(this.isLoading ? '注册中...' : '注册');
             // 注册按钮
             Button.width('90%');
             // 注册按钮
@@ -267,6 +241,8 @@ class Register extends ViewPU {
             Button.backgroundColor('#007DFF');
             // 注册按钮
             Button.borderRadius(8);
+            // 注册按钮
+            Button.enabled(!this.isLoading);
             // 注册按钮
             Button.onClick(() => {
                 this.handleRegister();
@@ -294,8 +270,8 @@ class Register extends ViewPU {
         Column.pop();
         Column.pop();
     }
-    private handleRegister() {
-        if (!this.username || !this.password || !this.confirmPassword || !this.email) {
+    private async handleRegister() {
+        if (!this.username || !this.password || !this.confirmPassword) {
             this.errorMessage = '请填写所有必填项';
             return;
         }
@@ -303,23 +279,25 @@ class Register extends ViewPU {
             this.errorMessage = '两次输入的密码不一致';
             return;
         }
-        // 验证邮箱格式
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(this.email)) {
-            this.errorMessage = '请输入有效的邮箱地址';
-            return;
+        this.isLoading = true;
+        this.errorMessage = '';
+        try {
+            const apiService = ApiService.getInstance();
+            const success = await apiService.register(this.username, this.password);
+            if (success) {
+                // 注册成功，返回登录页面
+                router.back();
+            }
+            else {
+                this.errorMessage = '注册失败，请稍后重试';
+            }
         }
-        const userManager = UserManager.getInstance();
-        if (userManager.isUserExists(this.username)) {
-            this.errorMessage = '用户名已存在';
-            return;
-        }
-        if (userManager.register(this.username, this.password, this.email)) {
-            // 注册成功，返回登录页面
-            router.back();
-        }
-        else {
+        catch (err) {
+            console.error(`注册错误: ${err}`);
             this.errorMessage = '注册失败，请稍后重试';
+        }
+        finally {
+            this.isLoading = false;
         }
     }
     rerender() {

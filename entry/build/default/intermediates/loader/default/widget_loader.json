@@ -1,10 +1,10 @@
 {
   "modulePathMap": {
-    "entry": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry"
+    "entry": "C:\\Users\\Fanful\\IdeaProjects\\healthLab\\Health_Life\\entry"
   },
   "compileMode": "esmodule",
-  "projectRootPath": "C:\\Users\\Fanful\\IdeaProjects\\Health",
-  "nodeModulesPath": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates\\loader_out\\default\\node_modules",
+  "projectRootPath": "C:\\Users\\Fanful\\IdeaProjects\\healthLab\\Health_Life",
+  "nodeModulesPath": "C:\\Users\\Fanful\\IdeaProjects\\healthLab\\Health_Life\\entry\\build\\default\\intermediates\\loader_out\\default\\node_modules",
   "byteCodeHarInfo": {},
   "declarationEntry": [],
   "moduleName": "entry",
@@ -17,9 +17,9 @@
   "routerMap": [],
   "hspResourcesMap": {},
   "updateVersionInfo": {},
-  "anBuildOutPut": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates\\loader_out\\default\\an\\arm64-v8a",
+  "anBuildOutPut": "C:\\Users\\Fanful\\IdeaProjects\\healthLab\\Health_Life\\entry\\build\\default\\intermediates\\loader_out\\default\\an\\arm64-v8a",
   "anBuildMode": "type",
   "patchConfig": {
-    "changedFileList": "C:\\Users\\Fanful\\IdeaProjects\\Health\\entry\\build\\default\\intermediates\\patch\\default\\changedFileList.json"
+    "changedFileList": "C:\\Users\\Fanful\\IdeaProjects\\healthLab\\Health_Life\\entry\\build\\default\\intermediates\\patch\\default\\changedFileList.json"
   }
 }

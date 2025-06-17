@@ -1,8 +1,7 @@
-import { User } from '../model/User';
-import { UserManager } from '../model/UserManager';
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import { BusinessError } from '@ohos.base';
+import { ApiService } from '../services/ApiService';
 
 @Entry
 @Component
@@ -10,6 +9,7 @@ struct Login {
   @State username: string = '';
   @State password: string = '';
   @State errorMessage: string = '';
+  @State isLoading: boolean = false;
 
   build() {
     Column() {
@@ -62,13 +62,14 @@ struct Login {
         }
 
         // 登录按钮
-        Button('登录')
+        Button(this.isLoading ? '登录中...' : '登录')
           .width('90%')
           .height(50)
           .fontSize(18)
           .fontWeight(FontWeight.Medium)
           .backgroundColor('#007DFF')
           .borderRadius(8)
+          .enabled(!this.isLoading)
           .onClick(() => {
             this.handleLogin();
           })
@@ -81,13 +82,6 @@ struct Login {
           .onClick(() => {
             router.pushUrl({ url: 'pages/Register' });
           })
-
-        // 提示信息
-        Text('预设账号：admin/test/user1\n密码：123456')
-          .fontSize(14)
-          .fontColor('#666666')
-          .margin({ top: 40 })
-          .textAlign(TextAlign.Center)
       }
       .width('100%')
       .padding({ left: 20, right: 20 })
@@ -97,33 +91,41 @@ struct Login {
     .backgroundColor('#F1F3F5')
   }
 
-  private handleLogin() {
+  private async handleLogin() {
     if (!this.username || !this.password) {
       this.errorMessage = '请输入用户名和密码';
       return;
     }
 
-    const userManager = UserManager.getInstance();
-    if (userManager.login(this.username, this.password)) {
-      // 登录成功，跳转到主页
-      try {
-        router.pushUrl({
-          url: 'pages/MainPage',
-          params: {
-            username: this.username
-          }
-        }).then(() => {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    try {
+      const apiService = ApiService.getInstance();
+      const success = await apiService.login(this.username, this.password);
+
+      if (success) {
+        // 登录成功，跳转到主页
+        try {
+          await router.pushUrl({
+            url: 'pages/MainPage',
+            params: {
+              username: this.username
+            }
+          });
           promptAction.showToast({ message: '登录成功' });
-        }).catch((err: BusinessError) => {
+        } catch (err) {
           console.error(`跳转失败: ${err.message}`);
           promptAction.showToast({ message: '跳转失败，请重试' });
-        });
-      } catch (err) {
-        console.error(`路由错误: ${err.message}`);
-        promptAction.showToast({ message: '系统错误，请重试' });
+        }
+      } else {
+        this.errorMessage = '用户名或密码错误';
       }
-    } else {
-      this.errorMessage = '用户名或密码错误';
+    } catch (err) {
+      console.error(`登录错误: ${err}`);
+      this.errorMessage = '登录失败，请稍后重试';
+    } finally {
+      this.isLoading = false;
     }
   }
 } 

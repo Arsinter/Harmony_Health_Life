@@ -5,11 +5,11 @@ interface Login_Params {
     username?: string;
     password?: string;
     errorMessage?: string;
+    isLoading?: boolean;
 }
-import { UserManager } from "@bundle:com.example.healthy_life/entry/ets/model/UserManager";
 import router from "@ohos:router";
 import promptAction from "@ohos:promptAction";
-import type { BusinessError } from "@ohos:base";
+import { ApiService } from "@bundle:com.example.healthy_life/entry/ets/services/ApiService";
 class Login extends ViewPU {
     constructor(parent, params, __localStorage, elmtId = -1, paramsLambda = undefined, extraInfo) {
         super(parent, __localStorage, elmtId, extraInfo);
@@ -19,6 +19,7 @@ class Login extends ViewPU {
         this.__username = new ObservedPropertySimplePU('', this, "username");
         this.__password = new ObservedPropertySimplePU('', this, "password");
         this.__errorMessage = new ObservedPropertySimplePU('', this, "errorMessage");
+        this.__isLoading = new ObservedPropertySimplePU(false, this, "isLoading");
         this.setInitiallyProvidedValue(params);
         this.finalizeConstruction();
     }
@@ -32,6 +33,9 @@ class Login extends ViewPU {
         if (params.errorMessage !== undefined) {
             this.errorMessage = params.errorMessage;
         }
+        if (params.isLoading !== undefined) {
+            this.isLoading = params.isLoading;
+        }
     }
     updateStateVars(params: Login_Params) {
     }
@@ -39,11 +43,13 @@ class Login extends ViewPU {
         this.__username.purgeDependencyOnElmtId(rmElmtId);
         this.__password.purgeDependencyOnElmtId(rmElmtId);
         this.__errorMessage.purgeDependencyOnElmtId(rmElmtId);
+        this.__isLoading.purgeDependencyOnElmtId(rmElmtId);
     }
     aboutToBeDeleted() {
         this.__username.aboutToBeDeleted();
         this.__password.aboutToBeDeleted();
         this.__errorMessage.aboutToBeDeleted();
+        this.__isLoading.aboutToBeDeleted();
         SubscriberManager.Get().delete(this.id__());
         this.aboutToBeDeletedInternal();
     }
@@ -67,6 +73,13 @@ class Login extends ViewPU {
     }
     set errorMessage(newValue: string) {
         this.__errorMessage.set(newValue);
+    }
+    private __isLoading: ObservedPropertySimplePU<boolean>;
+    get isLoading() {
+        return this.__isLoading.get();
+    }
+    set isLoading(newValue: boolean) {
+        this.__isLoading.set(newValue);
     }
     initialRender() {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
@@ -174,7 +187,7 @@ class Login extends ViewPU {
         If.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             // 登录按钮
-            Button.createWithLabel('登录');
+            Button.createWithLabel(this.isLoading ? '登录中...' : '登录');
             // 登录按钮
             Button.width('90%');
             // 登录按钮
@@ -187,6 +200,8 @@ class Login extends ViewPU {
             Button.backgroundColor('#007DFF');
             // 登录按钮
             Button.borderRadius(8);
+            // 登录按钮
+            Button.enabled(!this.isLoading);
             // 登录按钮
             Button.onClick(() => {
                 this.handleLogin();
@@ -210,52 +225,46 @@ class Login extends ViewPU {
         }, Text);
         // 注册链接
         Text.pop();
-        this.observeComponentCreation2((elmtId, isInitialRender) => {
-            // 提示信息
-            Text.create('预设账号：admin/test/user1\n密码：123456');
-            // 提示信息
-            Text.fontSize(14);
-            // 提示信息
-            Text.fontColor('#666666');
-            // 提示信息
-            Text.margin({ top: 40 });
-            // 提示信息
-            Text.textAlign(TextAlign.Center);
-        }, Text);
-        // 提示信息
-        Text.pop();
         // 登录表单
         Column.pop();
         Column.pop();
     }
-    private handleLogin() {
+    private async handleLogin() {
         if (!this.username || !this.password) {
             this.errorMessage = '请输入用户名和密码';
             return;
         }
-        const userManager = UserManager.getInstance();
-        if (userManager.login(this.username, this.password)) {
-            // 登录成功，跳转到主页
-            try {
-                router.pushUrl({
-                    url: 'pages/MainPage',
-                    params: {
-                        username: this.username
-                    }
-                }).then(() => {
+        this.isLoading = true;
+        this.errorMessage = '';
+        try {
+            const apiService = ApiService.getInstance();
+            const success = await apiService.login(this.username, this.password);
+            if (success) {
+                // 登录成功，跳转到主页
+                try {
+                    await router.pushUrl({
+                        url: 'pages/MainPage',
+                        params: {
+                            username: this.username
+                        }
+                    });
                     promptAction.showToast({ message: '登录成功' });
-                }).catch((err: BusinessError) => {
+                }
+                catch (err) {
                     console.error(`跳转失败: ${err.message}`);
                     promptAction.showToast({ message: '跳转失败，请重试' });
-                });
+                }
             }
-            catch (err) {
-                console.error(`路由错误: ${err.message}`);
-                promptAction.showToast({ message: '系统错误，请重试' });
+            else {
+                this.errorMessage = '用户名或密码错误';
             }
         }
-        else {
-            this.errorMessage = '用户名或密码错误';
+        catch (err) {
+            console.error(`登录错误: ${err}`);
+            this.errorMessage = '登录失败，请稍后重试';
+        }
+        finally {
+            this.isLoading = false;
         }
     }
     rerender() {

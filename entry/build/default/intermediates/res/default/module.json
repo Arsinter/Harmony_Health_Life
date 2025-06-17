@@ -67,6 +67,8 @@
 					"when":	"always"
 				},
 				"reasonId":	16777271
+			}, {
+				"name":	"ohos.permission.INTERNET"
 			}],
 		"packageName":	"entry",
 		"virtualMachine":	"ark12.0.2.0",

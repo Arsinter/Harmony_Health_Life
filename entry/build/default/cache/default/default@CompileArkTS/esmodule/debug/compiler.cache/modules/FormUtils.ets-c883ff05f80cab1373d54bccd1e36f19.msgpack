@@ -1,0 +1,602 @@
+Ôr@Ÿªassertions¤code´customTransformCache¬dependencies¢id¤meta±moduleSideEffects¬originalCode±originalSourcemap«resolvedIds®sourcemapChainµsyntheticNamedExportsµtransformDependencies®transformFiles¨cacheAstÔrAÚ+K/*
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License,Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import formBindingData from "@ohos.app.form.formBindingData";
+import formProvider from "@ohos.app.form.formProvider";
+import RdbUtils from '../database/rdb/RdbUtils';
+import FormInfoApi from '../database/tables/FormInfoApi';
+import DayInfoApi from '../database/tables/DayInfoApi';
+import TaskInfoApi from '../database/tables/TaskInfoApi';
+import AgencyCardInfo from '../../viewmodel/AgencyCardInfo';
+import Logger from '../utils/Logger';
+import ProgressCardInfo from '../../viewmodel/ProgressCardInfo';
+import { taskType } from '../../viewmodel/TaskInfo';
+import { columnDayInfoList, columnTaskInfoInfoList, columnFormInfoList } from '../../model/RdbColumnModel';
+import { CommonConstants as Const, Unit, TaskType } from '../constants/CommonConstants';
+import { GlobalContext } from './GlobalContext';
+class FormUtils {
+    /**
+     * Insert form data
+     *
+     * @param {Context} context Indicates the context of application or capability.
+     * @param {FormInfo} formInfo Insert the form information to be saved.
+     */
+    insertFormData(context, formInfo) {
+        RdbUtils.initDb(context, Const.RDB_NAME.dbName ? Const.RDB_NAME.dbName : '');
+        let isCreatePromise = RdbUtils.isCreateTable(Const.FORM_INFO.tableName ?
+            Const.FORM_INFO.tableName : '', columnFormInfoList);
+        isCreatePromise.then((result) => {
+            if (!result) {
+                Logger.error(Const.TAG, 'insertFormData form table create error');
+                return;
+            }
+            FormInfoApi.insertData(formInfo, (isDone) => {
+                if (isDone) {
+                    Logger.info(Const.TAG, 'insert formInfo success: ' + JSON.stringify(isDone));
+                    this.queryForms();
+                }
+            });
+        });
+    }
+    /**
+     * Update card operation
+     *
+     * @param {Context} context Indicates the context of application or capability.
+     */
+    updateCards(context) {
+        RdbUtils.initDb(context, Const.RDB_NAME.dbName ? Const.RDB_NAME.dbName : '');
+        let isCreatePromise = RdbUtils.isCreateTable(Const.FORM_INFO.tableName ?
+            Const.FORM_INFO.tableName : '', columnFormInfoList);
+        isCreatePromise.then((result) => {
+            if (!result) {
+                Logger.error(Const.TAG, 'updateCards form table create error');
+                return;
+            }
+            this.queryForms();
+        });
+    }
+    /**
+     * Delete form data
+     *
+     * @param {Context} context Indicates the context of application or capability.
+     * @param {string} formId delete form id
+     */
+    deleteFormData(context, formId) {
+        RdbUtils.initDb(context, Const.RDB_NAME.dbName ? Const.RDB_NAME.dbName : '');
+        let isCreatePromise = RdbUtils.isCreateTable(Const.FORM_INFO.tableName ?
+            Const.FORM_INFO.tableName : '', columnFormInfoList);
+        isCreatePromise.then((result) => {
+            if (!result) {
+                Logger.error(Const.TAG, 'deleteFormData form table create error');
+                return;
+            }
+            FormInfoApi.deleteFormData(formId);
+        });
+    }
+    /**
+     * Update form operation
+     */
+    queryForms() {
+        FormInfoApi.queryFormData((resultSet) => {
+            resultSet.forEach((item) => {
+                this.updateRectangleCards(item);
+            });
+        });
+    }
+    /**
+     * Background update all card
+     */
+    backgroundUpdateCard(taskListChange) {
+        if (taskListChange) {
+            GlobalContext.getContext().setObject('taskListChange', false);
+            let timeId = setTimeout(() => {
+                this.queryForms();
+                clearInterval(timeId);
+            }, Const.TIMES_100);
+        }
+    }
+    updateRectangleCards(formInfo) {
+        if ((formInfo.formName === Const.WIDGET_NAME_AGENCY) &&
+            (formInfo.formDimension === Const.DEFAULT_DIMENSION_2X4)) {
+            let createPromise = RdbUtils.isCreateTable(Const.TASK_INFO.tableName ?
+                Const.TASK_INFO.tableName : '', columnTaskInfoInfoList);
+            createPromise.then((result) => {
+                if (!result) {
+                    Logger.error(Const.TAG, 'taskInfo table create error');
+                    return;
+                }
+                this.dateQueryTaskInfo(formInfo, new Date().toDateString());
+            }).catch((err) => {
+                Logger.error(Const.TAG, `taskInfo err : ${JSON.stringify(err)}`);
+            });
+        }
+        if ((formInfo.formName === Const.WIDGET_NAME_PROGRESS) &&
+            (formInfo.formDimension === Const.DEFAULT_DIMENSION_2X2)) {
+            let createPromise = RdbUtils.isCreateTable(Const.DAY_INFO.tableName ?
+                Const.DAY_INFO.tableName : '', columnDayInfoList);
+            createPromise.then((result) => {
+                if (!result) {
+                    Logger.error(Const.TAG, 'dayInfo create table error');
+                    return;
+                }
+                this.dateQueryDayInfo(formInfo, new Date().toDateString());
+            }).catch((err) => {
+                Logger.error(Const.TAG, `dayInfo err : ${JSON.stringify(err)}`);
+            });
+        }
+    }
+    dateQueryTaskInfo(formInfo, dateKey) {
+        TaskInfoApi.query(dateKey, true, (data) => {
+            if (data.length === 0) {
+                // Query task data based on the global field.
+                this.globalQueryTaskInfo(formInfo, Const.GLOBAL_KEY);
+            }
+            else {
+                this.processTaskData(formInfo, data);
+            }
+        });
+    }
+    dateQueryDayInfo(formInfo, dateKey) {
+        DayInfoApi.query(dateKey, (data) => {
+            if (data.date === '') {
+                // Query day data based on the global field.
+                this.globalQueryDayInfo(formInfo, Const.GLOBAL_KEY);
+            }
+            else {
+                this.processDayData(formInfo, data);
+            }
+        });
+    }
+    globalQueryTaskInfo(formInfo, dateKey) {
+        TaskInfoApi.query(dateKey, true, (data) => {
+            this.processTaskData(formInfo, data);
+        });
+    }
+    globalQueryDayInfo(formInfo, dateKey) {
+        DayInfoApi.query(dateKey, (data) => {
+            this.processDayData(formInfo, data);
+        });
+    }
+    processTaskData(formInfo, data) {
+        let taskList = this.fetchResult(data);
+        let obj = {};
+        obj.taskList = taskList;
+        obj.showWidget = taskList.length === 0 ? false : true;
+        let formData = formBindingData.createFormBindingData(obj);
+        formProvider.updateForm(formInfo.formId, formData).catch((err) => {
+            Logger.error(Const.TAG, `processTaskData updateForm, err: ${JSON.stringify(err)}`);
+        });
+    }
+    processDayData(formInfo, data) {
+        let finTaskNum = 0;
+        let targetTaskNum = 0;
+        let percent = '0';
+        if (data && data.date !== '') {
+            finTaskNum = data.finTaskNum > data.targetTaskNum ? data.targetTaskNum : data.finTaskNum;
+            targetTaskNum = data.targetTaskNum;
+            percent = targetTaskNum === 0 ? '0' : Math.ceil(finTaskNum / targetTaskNum * Const.DEFAULT_100).toFixed();
+        }
+        let obj = new ProgressCardInfo();
+        obj.numerator = finTaskNum;
+        obj.denominator = targetTaskNum;
+        obj.percent = percent;
+        let formData = formBindingData.createFormBindingData(obj);
+        formProvider.updateForm(formInfo.formId, formData).catch((err) => {
+            Logger.error(Const.TAG, `processDayData updateForm, err: ${JSON.stringify(err)}`);
+        });
+    }
+    getTemp(temp, taskType, unit, dateType, isDone) {
+        let agencyCardInfo = new AgencyCardInfo();
+        agencyCardInfo.targetValue = temp.targetValue;
+        agencyCardInfo.finValue = temp.finValue;
+        agencyCardInfo.finValueIsNull = temp.finValueIsNull;
+        agencyCardInfo.taskType = taskType;
+        agencyCardInfo.unit = unit;
+        agencyCardInfo.dateType = dateType;
+        agencyCardInfo.isDone = isDone;
+        return agencyCardInfo;
+    }
+    fetchResult(data) {
+        let taskList = new Array();
+        data.forEach((item) => {
+            let temp = {
+                targetValue: item.targetValue,
+                finValue: item.isDone ? item.targetValue : item.finValue,
+                finValueIsNull: item.isDone ? false : (item.finValue === '' ? true : false),
+            };
+            switch (item.taskID) {
+                case taskType.getup:
+                    temp = this.getTemp(temp, TaskType.Getup, Unit.Empty, true, item.isDone);
+                    break;
+                case taskType.drinkWater:
+                    temp = this.getTemp(temp, TaskType.Drink, Unit.Liter, false, item.isDone);
+                    break;
+                case taskType.eatApple:
+                    temp = this.getTemp(temp, TaskType.Apple, Unit.Pcs, false, item.isDone);
+                    break;
+                case taskType.smile:
+                    temp = this.getTemp(temp, TaskType.Smile, Unit.Times, false, item.isDone);
+                    break;
+                case taskType.brushTeeth:
+                    temp = this.getTemp(temp, TaskType.Clean, Unit.Times, false, item.isDone);
+                    break;
+                case taskType.sleepEarly:
+                    temp = this.getTemp(temp, TaskType.Sleep, Unit.Empty, true, item.isDone);
+                    break;
+                case taskType.run:
+                    temp = this.getTemp(temp, TaskType.Run, Unit.Kile, false, item.isDone);
+                    break;
+                //æ–°å¢è‡ªå®šä¹‰æ—¶é—´ç±»
+                case taskType.custom:
+                    temp = this.getTemp(temp, TaskType.Custom, Unit.Empty, false, item.isDone);
+                    break;
+                //æ–°å¢è‡ªå®šä¹‰æ¬¡æ•°ç±»
+                case taskType.custom2:
+                    temp = this.getTemp(temp, TaskType.Custom2, Unit.Pcs, false, item.isDone);
+                    break;
+                default:
+                    break;
+            }
+            taskList.push(temp);
+        });
+        Logger.info(Const.TAG, 'fetchResult taskList ' + JSON.stringify(taskList));
+        return taskList;
+    }
+}
+export default new FormUtils();
+//# sourceMappingURL=FormUtils.js.mapÂÙx hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.app.form.formBindingData.d.tsÙu hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.app.form.formProvider.d.tsÙfC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\database\rdb\RdbUtils.etsÙlC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\database\tables\FormInfoApi.etsÙkC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\database\tables\DayInfoApi.etsÙlC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\database\tables\TaskInfoApi.etsÙbC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\viewmodel\AgencyCardInfo.etsÙ]C:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\utils\Logger.etsÙdC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\viewmodel\ProgressCardInfo.etsÙ\C:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\viewmodel\TaskInfo.etsÙ^C:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\model\RdbColumnModel.etsÙjC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\constants\CommonConstants.etsÙdC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\utils\GlobalContext.etsÙ`C:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\utils\FormUtils.etsÔrB›ªmoduleName±isLocalDependency¯isNodeEntryFile§pkgPath±belongProjectPath§pkgNameªpkgVersion±dependencyPkgInfo°belongModulePath¯hostModulesInfo¬shouldEmitJs¥entryÃÂÙ8C:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entryÙ2C:\Users\Fanful\IdeaProjects\healthLab\Health_Life¥entry¥1.0.0Ô  Ù8C:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry’ÔrC’²hostDependencyName®hostModuleName¹../common/utils/FormUtils¥entryC¹../common/utils/FormUtils¥entryÃÃÚ)Ê/*
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License,Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { formBindingData } from '@kit.FormKit';
+import { formProvider } from '@kit.FormKit';
+import RdbUtils from '../database/rdb/RdbUtils';
+import FormInfoApi from '../database/tables/FormInfoApi';
+import DayInfoApi from '../database/tables/DayInfoApi';
+import TaskInfoApi from '../database/tables/TaskInfoApi';
+import AgencyCardInfo from '../../viewmodel/AgencyCardInfo';
+import FormInfo from '../../viewmodel/FormInfo';
+import Logger from '../utils/Logger';
+import ProgressCardInfo from '../../viewmodel/ProgressCardInfo';
+import TaskInfo, { taskType } from '../../viewmodel/TaskInfo';
+import { columnDayInfoList, columnTaskInfoInfoList, columnFormInfoList } from '../../model/RdbColumnModel';
+import { CommonConstants as Const, Unit, TaskType } from '../constants/CommonConstants';
+import DayInfo from '../../viewmodel/DayInfo';
+import { GlobalContext } from './GlobalContext';
+
+class FormUtils {
+  /**
+   * Insert form data
+   *
+   * @param {Context} context Indicates the context of application or capability.
+   * @param {FormInfo} formInfo Insert the form information to be saved.
+   */
+  public insertFormData(context: Context, formInfo: FormInfo): void {
+    RdbUtils.initDb(context, Const.RDB_NAME.dbName ? Const.RDB_NAME.dbName : '');
+    let isCreatePromise = RdbUtils.isCreateTable(Const.FORM_INFO.tableName ?
+    Const.FORM_INFO.tableName : '', columnFormInfoList);
+    isCreatePromise.then((result: boolean) => {
+      if (!result) {
+        Logger.error(Const.TAG, 'insertFormData form table create error');
+        return;
+      }
+      FormInfoApi.insertData(formInfo, (isDone: number) => {
+        if (isDone) {
+          Logger.info(Const.TAG, 'insert formInfo success: ' + JSON.stringify(isDone));
+          this.queryForms();
+        }
+      });
+    });
+  }
+
+  /**
+   * Update card operation
+   *
+   * @param {Context} context Indicates the context of application or capability.
+   */
+  public updateCards(context: Context): void {
+    RdbUtils.initDb(context, Const.RDB_NAME.dbName ? Const.RDB_NAME.dbName : '');
+    let isCreatePromise = RdbUtils.isCreateTable(Const.FORM_INFO.tableName ?
+    Const.FORM_INFO.tableName : '', columnFormInfoList);
+    isCreatePromise.then((result: boolean) => {
+      if (!result) {
+        Logger.error(Const.TAG, 'updateCards form table create error');
+        return;
+      }
+      this.queryForms();
+    });
+  }
+
+  /**
+   * Delete form data
+   *
+   * @param {Context} context Indicates the context of application or capability.
+   * @param {string} formId delete form id
+   */
+  public deleteFormData(context: Context, formId: string): void {
+    RdbUtils.initDb(context, Const.RDB_NAME.dbName ? Const.RDB_NAME.dbName : '');
+    let isCreatePromise = RdbUtils.isCreateTable(Const.FORM_INFO.tableName ?
+    Const.FORM_INFO.tableName : '', columnFormInfoList);
+    isCreatePromise.then((result: boolean) => {
+      if (!result) {
+        Logger.error(Const.TAG, 'deleteFormData form table create error');
+        return;
+      }
+      FormInfoApi.deleteFormData(formId);
+    });
+  }
+
+  /**
+   * Update form operation
+   */
+  public queryForms(): void {
+    FormInfoApi.queryFormData((resultSet: Array<FormInfo>) => {
+      resultSet.forEach((item: FormInfo) => {
+        this.updateRectangleCards(item);
+      });
+    });
+  }
+
+  /**
+   * Background update all card
+   */
+  public backgroundUpdateCard(taskListChange: boolean): void {
+    if (taskListChange) {
+      GlobalContext.getContext().setObject('taskListChange', false);
+      let timeId = setTimeout(() => {
+        this.queryForms();
+        clearInterval(timeId);
+      }, Const.TIMES_100);
+    }
+  }
+
+  private updateRectangleCards(formInfo: FormInfo): void {
+    if ((formInfo.formName === Const.WIDGET_NAME_AGENCY) &&
+      (formInfo.formDimension === Const.DEFAULT_DIMENSION_2X4)) {
+      let createPromise = RdbUtils.isCreateTable(Const.TASK_INFO.tableName ?
+      Const.TASK_INFO.tableName : '', columnTaskInfoInfoList);
+      createPromise.then((result: boolean) => {
+        if (!result) {
+          Logger.error(Const.TAG, 'taskInfo table create error');
+          return;
+        }
+        this.dateQueryTaskInfo(formInfo, new Date().toDateString());
+      }).catch((err: Error) => {
+        Logger.error(Const.TAG, `taskInfo err : ${JSON.stringify(err)}`);
+      });
+    }
+    if ((formInfo.formName === Const.WIDGET_NAME_PROGRESS) &&
+      (formInfo.formDimension === Const.DEFAULT_DIMENSION_2X2)) {
+      let createPromise = RdbUtils.isCreateTable(Const.DAY_INFO.tableName ?
+      Const.DAY_INFO.tableName : '', columnDayInfoList);
+      createPromise.then((result: boolean) => {
+        if (!result) {
+          Logger.error(Const.TAG, 'dayInfo create table error');
+          return;
+        }
+        this.dateQueryDayInfo(formInfo, new Date().toDateString());
+      }).catch((err: Error) => {
+        Logger.error(Const.TAG, `dayInfo err : ${JSON.stringify(err)}`);
+      });
+    }
+  }
+
+  private dateQueryTaskInfo(formInfo: FormInfo, dateKey: string): void {
+    TaskInfoApi.query(dateKey, true, (data: TaskInfo[]) => {
+      if (data.length === 0) {
+        // Query task data based on the global field.
+        this.globalQueryTaskInfo(formInfo, Const.GLOBAL_KEY);
+      } else {
+        this.processTaskData(formInfo, data);
+      }
+    });
+  }
+
+  private dateQueryDayInfo(formInfo: FormInfo, dateKey: string): void {
+    DayInfoApi.query(dateKey, (data: DayInfo) => {
+      if (data.date === '') {
+        // Query day data based on the global field.
+        this.globalQueryDayInfo(formInfo, Const.GLOBAL_KEY);
+      } else {
+        this.processDayData(formInfo, data);
+      }
+    });
+  }
+
+  private globalQueryTaskInfo(formInfo: FormInfo, dateKey: string): void {
+    TaskInfoApi.query(dateKey, true, (data: TaskInfo[]) => {
+      this.processTaskData(formInfo, data);
+    });
+  }
+
+  private globalQueryDayInfo(formInfo: FormInfo, dateKey: string): void {
+    DayInfoApi.query(dateKey, (data: DayInfo) => {
+      this.processDayData(formInfo, data);
+    });
+  }
+
+  private processTaskData(formInfo: FormInfo, data: TaskInfo[]): void {
+    let taskList: AgencyCardInfo[] = this.fetchResult(data);
+    let obj: ProgressCardInfo = {};
+    obj.taskList = taskList;
+    obj.showWidget = taskList.length === 0 ? false : true;
+    let formData = formBindingData.createFormBindingData(obj);
+    formProvider.updateForm(formInfo.formId, formData).catch((err: Error) => {
+      Logger.error(Const.TAG, `processTaskData updateForm, err: ${JSON.stringify(err)}`);
+    });
+  }
+
+  private processDayData(formInfo: FormInfo, data: DayInfo): void {
+    let finTaskNum: number = 0;
+    let targetTaskNum: number = 0;
+    let percent: string = '0';
+    if (data && data.date !== '') {
+      finTaskNum = data.finTaskNum > data.targetTaskNum ? data.targetTaskNum : data.finTaskNum;
+      targetTaskNum = data.targetTaskNum;
+      percent = targetTaskNum === 0 ? '0' : Math.ceil(finTaskNum / targetTaskNum * Const.DEFAULT_100).toFixed();
+    }
+    let obj: ProgressCardInfo = new ProgressCardInfo();
+    obj.numerator = finTaskNum;
+    obj.denominator = targetTaskNum;
+    obj.percent = percent;
+    let formData = formBindingData.createFormBindingData(obj);
+    formProvider.updateForm(formInfo.formId, formData).catch((err: Error) => {
+      Logger.error(Const.TAG, `processDayData updateForm, err: ${JSON.stringify(err)}`);
+    });
+  }
+
+  private getTemp(temp: AgencyCardInfo, taskType: string, unit: string,
+                  dateType: boolean, isDone: boolean): AgencyCardInfo {
+    let agencyCardInfo: AgencyCardInfo = new AgencyCardInfo();
+    agencyCardInfo.targetValue = temp.targetValue;
+    agencyCardInfo.finValue = temp.finValue;
+    agencyCardInfo.finValueIsNull = temp.finValueIsNull;
+    agencyCardInfo.taskType = taskType;
+    agencyCardInfo.unit = unit;
+    agencyCardInfo.dateType = dateType;
+    agencyCardInfo.isDone = isDone;
+    return agencyCardInfo;
+  }
+
+  private fetchResult(data: TaskInfo[]): Array<AgencyCardInfo> {
+    let taskList: Array<AgencyCardInfo> = new Array<AgencyCardInfo>();
+    data.forEach((item: TaskInfo) => {
+      let temp: AgencyCardInfo = {
+        targetValue: item.targetValue,
+        finValue: item.isDone ? item.targetValue : item.finValue,
+        finValueIsNull: item.isDone ? false : (item.finValue === '' ? true : false),
+      };
+      switch (item.taskID) {
+        case taskType.getup:
+          temp = this.getTemp(temp, TaskType.Getup, Unit.Empty, true, item.isDone);
+          break;
+        case taskType.drinkWater:
+          temp = this.getTemp(temp, TaskType.Drink, Unit.Liter, false, item.isDone);
+          break;
+        case taskType.eatApple:
+          temp = this.getTemp(temp, TaskType.Apple, Unit.Pcs, false, item.isDone);
+          break;
+        case taskType.smile:
+          temp = this.getTemp(temp, TaskType.Smile, Unit.Times, false, item.isDone);
+          break;
+        case taskType.brushTeeth:
+          temp = this.getTemp(temp, TaskType.Clean, Unit.Times, false, item.isDone);
+          break;
+        case taskType.sleepEarly:
+          temp = this.getTemp(temp, TaskType.Sleep, Unit.Empty, true, item.isDone);
+          break;
+        case taskType.run:
+          temp = this.getTemp(temp, TaskType.Run, Unit.Kile, false, item.isDone);
+          break;
+        //æ–°å¢è‡ªå®šä¹‰æ—¶é—´ç±»
+        case taskType.custom:
+          temp = this.getTemp(temp, TaskType.Custom, Unit.Empty, false, item.isDone);
+          break
+        //æ–°å¢è‡ªå®šä¹‰æ¬¡æ•°ç±»
+        case taskType.custom2:
+          temp = this.getTemp(temp, TaskType.Custom2, Unit.Pcs, false, item.isDone);
+          break
+        default:
+          break;
+      }
+      taskList.push(temp);
+    });
+    Logger.info(Const.TAG, 'fetchResult taskList ' + JSON.stringify(taskList));
+    return taskList;
+  }
+}
+
+export default new FormUtils();ÀÔrD¾@ohos.app.form.formBindingData»@ohos.app.form.formProvider¸../database/rdb/RdbUtils¾../../viewmodel/AgencyCardInfo¯../utils/Logger½../database/tables/DayInfoApi¾../database/tables/FormInfoApiº../../model/RdbColumnModel¼../constants/CommonConstants¾../database/tables/TaskInfoApiÙ ../../viewmodel/ProgressCardInfo¯./GlobalContext¸../../viewmodel/TaskInfoÔrE—ªassertions¨external¢id¤meta±moduleSideEffectsªresolvedByµsyntheticNamedExportsAÃÙx hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.app.form.formBindingData.d.tsAÃªoh-resolveÂEAÃÙu hvigor_ignore_C:_Program Files_Huawei_DevEco Studio_sdk_default_openharmony_ets_api_@ohos.app.form.formProvider.d.tsÔrF‘¯hostModulesInfo‘C»@ohos.app.form.formProvider¥entryÃªoh-resolveÂEAÂÙfC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\database\rdb\RdbUtils.etsAÃªoh-resolveÂEAÂÙbC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\viewmodel\AgencyCardInfo.etsAÃªoh-resolveÂEAÂÙ]C:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\utils\Logger.etsAÃªoh-resolveÂEAÂÙkC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\database\tables\DayInfoApi.etsAÃªoh-resolveÂEAÂÙlC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\database\tables\FormInfoApi.etsAÃªoh-resolveÂEAÂÙ^C:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\model\RdbColumnModel.etsAÃªoh-resolveÂEAÂÙjC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\constants\CommonConstants.etsAÃªoh-resolveÂEAÂÙlC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\database\tables\TaskInfoApi.etsAÃªoh-resolveÂEAÂÙdC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\viewmodel\ProgressCardInfo.etsAÃªoh-resolveÂEAÂÙdC:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\common\utils\GlobalContext.etsAÃªoh-resolveÂEAÂÙ\C:\Users\Fanful\IdeaProjects\healthLab\Health_Life\entry\src\main\ets\viewmodel\TaskInfo.etsAÃªoh-resolveÂ“ÔrG–§version¤fileªsourceRoot§sources¥names¨mappings¬FormUtils.js ‘­FormUtils.etsÜ‘”    ‘” –”   ” 	” ”  ”< .”= /–”   ” 	” ” ”6 +”7 ,–”   ” ” ” ”/ /”0 0–”   ” ” ” ”8 8”9 9–”   ” ” ” ”6 6”7 7–”   ” ” ” ”8 8”9 9–”   ” ” ” ”; ;”< <–”   ” ” ” ”$ $”% %–”   ” ” ” ”? ?”Ì@ Ì@˜”   ” ”	 ” ” ” #”3 =”4 >œ”   ” ”	 	” ” ”2 2”4 4”ÌF ÌF”ÌH ÌH”ÌN ÌN”Ìj Ìj”Ìk Ìk”   ” ”	 	” ” ”! !”# #”' '”) )”1 1”3 3”9 9”ÌW ÌW”ÌX ÌX˜”   ” ”	 	” ” ” ”/ /”0 0“”   ” ” ‘”  ‘” %–” &	” &” &” &(” &*”$ &<Ü ” '” '” '” '” '” '”! '”& '"”' '#”/ '+”0 ',”6 '2”7 '3”8 '4”9 '5”> ':”? ';”ÌG 'ÌC”ÌH 'ÌD”ÌN 'ÌJ”ÌO 'ÌK”ÌP 'ÌL”ÌQ 'ÌM”ÌS 'ÌO”ÌT 'ÌP”ÌU 'ÌQŸ” (” (” (” (”& ("”' (#”4 (0”5 (1”: (6”; (7”ÌD (Ì@”ÌE (ÌA”ÌN (ÌJ”ÌO (ÌK”ÌP (ÌL” )” )	” )
+” )” )”% )”& )”' )”( ) ”* )"”, )$”> )6”? )7”Ì@ )8™” *” *” *” *” *” *”$ *)”& *+”( *-•” +” +
+” +” +” +œ” ,” ,” ,” ,” ,”" ,”# ,”& ,”( , ”ÌP ,ÌH”ÌQ ,ÌI”ÌR ,ÌJ’” -” -‘” .›” /” /” /”" /”# /”+ /%”- /'”. /(”4 /6”6 /8”8 /:”” 0” 0” 0” 0Ü ” 1
+” 1” 1” 1”  1”% 1”& 1”) 1”+ 1!”ÌF 1<”ÌI 1?”ÌM 1ÌC”ÌN 1ÌD”ÌW 1ÌM”ÌX 1ÌN”Ì^ 1ÌT”Ì_ 1ÌU”Ì` 1ÌV”Ìa 1ÌW–” 2
+” 2” 2”# 2”% 2”& 2‘” 3	”” 4” 4” 4” 4	”” 5”	 5”
+ 5” 5’” 6” 6‘” 8‘” <”” =	” =” =” =%Ü ” >” >” >” >” >” >”! >”& >"”' >#”/ >+”0 >,”6 >2”7 >3”8 >4”9 >5”> >:”? >;”ÌG >ÌC”ÌH >ÌD”ÌN >ÌJ”ÌO >ÌK”ÌP >ÌL”ÌQ >ÌM”ÌS >ÌO”ÌT >ÌP”ÌU >ÌQŸ” ?” ?” ?” ?”& ?"”' ?#”4 ?0”5 ?1”: ?6”; ?7”ÌD ?Ì@”ÌE ?ÌA”ÌN ?ÌJ”ÌO ?ÌK”ÌP ?ÌL” Ì@” Ì@	” Ì@
+” Ì@” Ì@”% Ì@”& Ì@”' Ì@”( Ì@ ”* Ì@"”, Ì@$”> Ì@6”? Ì@7”Ì@ Ì@8™” ÌA” ÌA” ÌA” ÌA” ÌA” ÌA”$ ÌA)”& ÌA+”( ÌA-•” ÌB” ÌB
+” ÌB” ÌB” ÌBœ” ÌC” ÌC” ÌC” ÌC” ÌC”" ÌC”# ÌC”& ÌC”( ÌC ”ÌM ÌCÌE”ÌN ÌCÌF”ÌO ÌCÌG’” ÌD” ÌD‘” ÌE–” ÌF” ÌF
+” ÌF” ÌF” ÌF” ÌF”” ÌG”	 ÌG”
+ ÌG” ÌG’” ÌH” ÌH‘” ÌJ‘” ÌO–” ÌP	” ÌP” ÌP” ÌP(” ÌP*”" ÌP8Ü ” ÌQ” ÌQ” ÌQ” ÌQ” ÌQ” ÌQ”! ÌQ”& ÌQ"”' ÌQ#”/ ÌQ+”0 ÌQ,”6 ÌQ2”7 ÌQ3”8 ÌQ4”9 ÌQ5”> ÌQ:”? ÌQ;”ÌG ÌQÌC”ÌH ÌQÌD”ÌN ÌQÌJ”ÌO ÌQÌK”ÌP ÌQÌL”ÌQ ÌQÌM”ÌS ÌQÌO”ÌT ÌQÌP”ÌU ÌQÌQŸ” ÌR” ÌR” ÌR” ÌR”& ÌR"”' ÌR#”4 ÌR0”5 ÌR1”: ÌR6”; ÌR7”ÌD ÌRÌ@”ÌE ÌRÌA”ÌN ÌRÌJ”ÌO ÌRÌK”ÌP ÌRÌL” ÌS” ÌS	” ÌS
+” ÌS” ÌS”% ÌS”& ÌS”' ÌS”( ÌS ”* ÌS"”, ÌS$”> ÌS6”? ÌS7”Ì@ ÌS8™” ÌT” ÌT” ÌT” ÌT” ÌT” ÌT”$ ÌT)”& ÌT+”( ÌT-•” ÌU” ÌU
+” ÌU” ÌU” ÌUœ” ÌV” ÌV” ÌV” ÌV” ÌV”" ÌV”# ÌV”& ÌV”( ÌV ”ÌP ÌVÌH”ÌQ ÌVÌI”ÌR ÌVÌJ’” ÌW” ÌW‘” ÌX˜” ÌY” ÌY” ÌY”& ÌY ”' ÌY!”- ÌY'”. ÌY(”/ ÌY)”” ÌZ”	 ÌZ”
+ ÌZ” ÌZ’” Ì[” Ì[‘” Ì]‘” Ì_’” Ì`	” Ì`™” Ìa” Ìa” Ìa”! Ìa”" Ìa”# Ìa”, Ìa9”. Ìa;”0 Ìa=™” Ìb” Ìb” Ìb” Ìb” Ìb” Ìb”# Ìb'”% Ìb)”' Ìb+˜” Ìc” Ìc” Ìc”) Ìc!”* Ìc"”. Ìc&”/ Ìc'”0 Ìc(”” Ìd” Ìd” Ìd” Ìd	”” Ìe”	 Ìe”
+ Ìe” Ìe’” Ìf” Ìf‘” Ìh‘” Ìj”” Ìk	” Ìk” Ìk”' Ìk5”” Ìl” Ìl” Ìl” Ìl” Ìm” Ìm” Ìm”$ Ìm”& Ìm ”' Ìm!”0 Ìm*”1 Ìm+”ÌA Ìm;”ÌC Ìm=”ÌH ÌmÌB”ÌI ÌmÌC”ÌJ ÌmÌD˜” Ìn” Ìn
+” Ìn” Ìn”# Ìn”$ Ìn”' Ìn!”) Ìn#–” Ìo” Ìo” Ìo” Ìo”! Ìo”" Ìo–” Ìp” Ìp” Ìp”$ Ìp”% Ìp”& Ìp˜” Ìq” Ìq” Ìq	” Ìq” Ìq” Ìq” Ìq”  Ìq‘”	 Ìr’” Ìs” Ìs”” Ìu
+” Ìu” Ìu”! Ìu1›” Ìv” Ìv” Ìv	” Ìv” Ìv” Ìv”# Ìv”( Ìv$”) Ìv%”; Ìv7”< Ìv8›” Ìw” Ìw” Ìw” Ìw”# Ìw”( Ìw"”- Ìw'”. Ìw(”ÌC Ìw=”ÌD Ìw>”ÌF ÌwÌ@Ÿ” Ìx” Ìx
+” Ìx”  Ìx”( Ìx"”) Ìx#”6 Ìx0”7 Ìx1”< Ìx6”= Ìx7”ÌF ÌxÌ@”ÌG ÌxÌA”ÌP ÌxÌJ”ÌQ ÌxÌK”ÌR ÌxÌL” Ìy” Ìy” Ìy” Ìy”  Ìy”) Ìy”* Ìy ”+ Ìy!”, Ìy"”. Ìy$”0 Ìy&”ÌF Ìy<”ÌG Ìy=”ÌH Ìy>™” Ìz” Ìz” Ìz” Ìz” Ìz”  Ìz”& Ìz)”( Ìz+”* Ìz-•” Ì{” Ì{” Ì{” Ì{” Ì{œ” Ì|
+” Ì|” Ì|”  Ì|”! Ì|”& Ì|”' Ì|”* Ì| ”, Ì|"”ÌI Ì|?”ÌJ Ì|Ì@”ÌK Ì|ÌA’” Ì}
+” Ì}‘” Ì~	Ÿ” Ì” Ì” Ì”& Ì”' Ì”/ Ì'”1 Ì)”5 Ì-”9 Ì1”; Ì3”< Ì4”ÌH ÌÌ@”ÌJ ÌÌB”ÌK ÌÌC”ÌL ÌÌDš” Ì€” Ì€” Ì€” Ì€	” Ì€” Ì€” Ì€” Ì€” Ì€” Ì€Ü ” Ì” Ì” Ì” Ì” Ì”" Ì”# Ì”& Ì”( Ì ”: Ì2”> Ì6”? Ì7”ÌH ÌÌ@”ÌI ÌÌA”ÌL ÌÌD”ÌM ÌÌE”ÌO ÌÌG”ÌP ÌÌH”ÌQ ÌÌI”” Ì‚” Ì‚” Ì‚” Ì‚	‘”	 Ìƒ›” Ì„” Ì„” Ì„	” Ì„” Ì„” Ì„”# Ì„”( Ì„$”) Ì„%”= Ì„9”> Ì„:›” Ì…” Ì…” Ì…” Ì…”# Ì…”( Ì…"”- Ì…'”. Ì…(”ÌC Ì…=”ÌD Ì…>”ÌF Ì…Ì@Ÿ” Ì†” Ì†
+” Ì†”  Ì†”( Ì†"”) Ì†#”6 Ì†0”7 Ì†1”< Ì†6”= Ì†7”ÌE Ì†?”ÌF Ì†Ì@”ÌO Ì†ÌI”ÌP Ì†ÌJ”ÌQ Ì†ÌK” Ì‡” Ì‡” Ì‡” Ì‡” Ì‡”( Ì‡”) Ì‡”* Ì‡ ”+ Ì‡!”- Ì‡#”/ Ì‡%”Ì@ Ì‡6”ÌA Ì‡7”ÌB Ì‡8™” Ìˆ” Ìˆ” Ìˆ” Ìˆ” Ìˆ”  Ìˆ”& Ìˆ)”( Ìˆ+”* Ìˆ-•” Ì‰” Ì‰” Ì‰” Ì‰” Ì‰œ” ÌŠ
+” ÌŠ” ÌŠ”  ÌŠ”! ÌŠ”& ÌŠ”' ÌŠ”* ÌŠ ”, ÌŠ"”ÌH ÌŠ>”ÌI ÌŠ?”ÌJ ÌŠÌ@’” Ì‹
+” Ì‹‘” ÌŒ	Ÿ” Ì” Ì” Ì”% Ì”& Ì”. Ì&”0 Ì(”4 Ì,”8 Ì0”: Ì2”; Ì3”ÌG Ì?”ÌI ÌÌA”ÌJ ÌÌB”ÌK ÌÌCš” Ì” Ì” Ì” Ì	” Ì” Ì” Ì” Ì” Ì” ÌÜ ” Ì” Ì” Ì” Ì” Ì”" Ì”# Ì”& Ì”( Ì ”9 Ì1”= Ì5”> Ì6”ÌG Ì?”ÌH ÌÌ@”ÌK ÌÌC”ÌL ÌÌD”ÌN ÌÌF”ÌO ÌÌG”ÌP ÌÌH”” Ì” Ì” Ì” Ì	‘”	 Ì‘’” Ì’” Ì’–” Ì”
+” Ì”” Ì”” Ì”.”  Ì”0”' Ì”?” Ì•” Ì•” Ì•” Ì•” Ì•”! Ì•”# Ì•”' Ì•#”) Ì•%”* Ì•&”. Ì•6”0 Ì•8”2 Ì•:˜” Ì–” Ì–
+” Ì–” Ì–” Ì–”  Ì–”! Ì–”# Ì–’” Ì—”= Ì—5œ” Ì˜” Ì˜” Ì˜”( Ì˜ ”) Ì˜!”1 Ì˜)”3 Ì˜+”8 Ì˜0”9 Ì˜1”ÌC Ì˜;”ÌD Ì˜<”ÌE Ì˜=‘” Ì™‘” Ì™š” Ìš” Ìš” Ìš”$ Ìš”% Ìš”- Ìš%”/ Ìš'”3 Ìš+”4 Ìš,”5 Ìš-‘” Ì›”” Ìœ”	 Ìœ”
+ Ìœ” Ìœ’” Ì” Ì–” ÌŸ
+” ÌŸ” ÌŸ” ÌŸ-” ÌŸ/”& ÌŸ>›” Ì ” Ì ” Ì ” Ì ” Ì ”  Ì ”" Ì ”# Ì ”' Ì ,”) Ì .”+ Ì 0˜” Ì¡” Ì¡
+” Ì¡” Ì¡” Ì¡” Ì¡”  Ì¡”" Ì¡’” Ì¢”< Ì¢4œ” Ì£” Ì£” Ì£”' Ì£”( Ì£ ”0 Ì£(”2 Ì£*”7 Ì£/”8 Ì£0”ÌB Ì£:”ÌC Ì£;”ÌD Ì£<‘” Ì¤‘” Ì¤š” Ì¥” Ì¥” Ì¥”# Ì¥”$ Ì¥”, Ì¥$”. Ì¥&”2 Ì¥*”3 Ì¥+”4 Ì¥,‘” Ì¦”” Ì§”	 Ì§”
+ Ì§” Ì§’” Ì¨” Ì¨–” Ìª
+” Ìª” Ìª”  Ìª0”" Ìª2”) ÌªÌA” Ì«” Ì«” Ì«” Ì«” Ì«”! Ì«”# Ì«”' Ì«#”) Ì«%”* Ì«&”. Ì«6”0 Ì«8”2 Ì«:š” Ì¬” Ì¬
+” Ì¬”  Ì¬”! Ì¬”) Ì¬#”+ Ì¬%”/ Ì¬)”0 Ì¬*”1 Ì¬+”” Ì­”	 Ì­”
+ Ì­” Ì­’” Ì®” Ì®–” Ì°
+” Ì°” Ì°” Ì°/”! Ì°1”( Ì°Ì@›” Ì±” Ì±” Ì±” Ì±” Ì±”  Ì±”" Ì±”# Ì±”' Ì±,”) Ì±.”+ Ì±0š” Ì²” Ì²
+” Ì²” Ì²”  Ì²”( Ì²"”* Ì²$”. Ì²(”/ Ì²)”0 Ì²*”” Ì³”	 Ì³”
+ Ì³” Ì³’” Ì´” Ì´–” Ì¶
+” Ì¶” Ì¶” Ì¶,” Ì¶.”" Ì¶>›” Ì·” Ì·” Ì·” Ì·%” Ì·)” Ì·*”' Ì·5”( Ì·6”, Ì·:”- Ì·;”. Ì·<–” Ì¸” Ì¸” Ì¸” Ì¸ ” Ì¸"” Ì¸#—” Ì¹” Ì¹” Ì¹” Ì¹” Ì¹” Ì¹”  Ì¹Ü ” Ìº” Ìº” Ìº” Ìº” Ìº”! Ìº”" Ìº”( Ìº$”- Ìº)”. Ìº*”/ Ìº+”0 Ìº,”1 Ìº-”6 Ìº2”7 Ìº3”8 Ìº4”9 Ìº5”= Ìº9”> Ìº:›” Ì»” Ì»” Ì»” Ì»”& Ì»"”' Ì»#”< Ì»8”= Ì»9”Ì@ Ì»<”ÌA Ì»=”ÌB Ì»>Ü ” Ì¼” Ì¼” Ì¼” Ì¼”  Ì¼”( Ì¼$”) Ì¼%”/ Ì¼+”1 Ì¼-”9 Ì¼5”: Ì¼6”; Ì¼7”Ì@ Ì¼<”ÌA Ì¼=”ÌB Ì¼>”ÌE Ì¼ÌH”ÌG Ì¼ÌJ”ÌI Ì¼ÌLÜ ” Ì½” Ì½” Ì½” Ì½” Ì½” Ì½” Ì½”" Ì½”$ Ì½”ÌH Ì½ÌB”ÌL Ì½ÌF”ÌM Ì½ÌG”ÌV Ì½ÌP”ÌW Ì½ÌQ”ÌZ Ì½ÌT”Ì[ Ì½ÌU”Ì] Ì½ÌW”Ì^ Ì½ÌX”Ì_ Ì½ÌY”” Ì¾”	 Ì¾”
+ Ì¾” Ì¾’” Ì¿” Ì¿–” ÌÁ
+” ÌÁ” ÌÁ” ÌÁ+” ÌÁ-”! ÌÁ:–” ÌÂ” ÌÂ” ÌÂ” ÌÂ” ÌÂ” ÌÂ–” ÌÃ” ÌÃ” ÌÃ” ÌÃ ” ÌÃ!” ÌÃ"–” ÌÄ” ÌÄ” ÌÄ” ÌÄ” ÌÄ” ÌÄš” ÌÅ” ÌÅ” ÌÅ” ÌÅ” ÌÅ” ÌÅ” ÌÅ”" ÌÅ”$ ÌÅ ”& ÌÅ"Ü ” ÌÆ” ÌÆ” ÌÆ” ÌÆ” ÌÆ”( ÌÆ"”+ ÌÆ%”/ ÌÆ)”0 ÌÆ*”= ÌÆ7”> ÌÆ8”? ÌÆ9”Ì@ ÌÆ:”ÌD ÌÆ>”ÌE ÌÆ?”ÌR ÌÆÌL”ÌS ÌÆÌM”ÌT ÌÆÌN”ÌU ÌÆÌO”ÌY ÌÆÌS”ÌZ ÌÆÌT”Ìd ÌÆÌ^”Ìe ÌÆÌ_—” ÌÇ” ÌÇ” ÌÇ”  ÌÇ”! ÌÇ”. ÌÇ(”/ ÌÇ)Ü ” ÌÈ” ÌÈ” ÌÈ”# ÌÈ”( ÌÈ"”) ÌÈ#”* ÌÈ$”+ ÌÈ%”, ÌÈ&”/ ÌÈ)”0 ÌÈ*”1 ÌÈ+”2 ÌÈ,”6 ÌÈ0”7 ÌÈ1”; ÌÈ5”< ÌÈ6”ÌF ÌÈÌ@”ÌI ÌÈÌC”ÌV ÌÈÌP”ÌY ÌÈÌS”Ì^ ÌÈÌX”Ì_ ÌÈÌY”Ìj ÌÈÌd”Ìk ÌÈÌe”Ìl ÌÈÌf”Ìs ÌÈÌm”Ìu ÌÈÌo”Ìv ÌÈÌp‘”	 ÌÉ˜” ÌÊ” ÌÊ” ÌÊ” ÌÊ ” ÌÊ$”& ÌÊ4”( ÌÊ6”) ÌÊ7—” ÌË” ÌË” ÌË” ÌË” ÌË”" ÌË”# ÌË—” ÌÌ” ÌÌ” ÌÌ” ÌÌ” ÌÌ”' ÌÌ#”( ÌÌ$—” ÌÍ” ÌÍ” ÌÍ” ÌÍ” ÌÍ” ÌÍ” ÌÍ›” ÌÎ” ÌÎ” ÌÎ” ÌÎ”& ÌÎ"”' ÌÎ#”< ÌÎ8”= ÌÎ9”Ì@ ÌÎ<”ÌA ÌÎ=”ÌB ÌÎ>Ü ” ÌÏ” ÌÏ” ÌÏ” ÌÏ”  ÌÏ”( ÌÏ$”) ÌÏ%”/ ÌÏ+”1 ÌÏ-”9 ÌÏ5”: ÌÏ6”; ÌÏ7”Ì@ ÌÏ<”ÌA ÌÏ=”ÌB ÌÏ>”ÌE ÌÏÌH”ÌG ÌÏÌJ”ÌI ÌÏÌLÜ ” ÌĞ” ÌĞ” ÌĞ” ÌĞ” ÌĞ” ÌĞ” ÌĞ”" ÌĞ”$ ÌĞ”ÌG ÌĞÌA”ÌK ÌĞÌE”ÌL ÌĞÌF”ÌU ÌĞÌO”ÌV ÌĞÌP”ÌY ÌĞÌS”ÌZ ÌĞÌT”Ì\ ÌĞÌV”Ì] ÌĞÌW”Ì^ ÌĞÌX”” ÌÑ”	 ÌÑ”
+ ÌÑ” ÌÑ’” ÌÒ” ÌÒœ” ÌÔ
+” ÌÔ” ÌÔ” ÌÔ&” ÌÔ(” ÌÔ8” ÌÔ:”  ÌÔÌF”" ÌÕ”* ÌÕ#”, ÌÕ%”2 ÌÕ4˜” ÌÖ” ÌÖ” ÌÖ” ÌÖ)”! ÌÖ-”/ ÌÖ;”1 ÌÖ=”2 ÌÖ>™” Ì×” Ì×” Ì×”" Ì×”% Ì×!”) Ì×%”* Ì×&”5 Ì×1”6 Ì×2™” ÌØ” ÌØ” ÌØ” ÌØ”" ÌØ”& ÌØ"”' ÌØ#”/ ÌØ+”0 ÌØ,™” ÌÙ” ÌÙ” ÌÙ”% ÌÙ!”( ÌÙ$”, ÌÙ(”- ÌÙ)”; ÌÙ7”< ÌÙ8—” ÌÚ” ÌÚ” ÌÚ” ÌÚ”" ÌÚ”* ÌÚ&”+ ÌÚ'—” ÌÛ” ÌÛ” ÌÛ” ÌÛ” ÌÛ”" ÌÛ”# ÌÛ—” ÌÜ” ÌÜ” ÌÜ” ÌÜ”" ÌÜ”* ÌÜ&”+ ÌÜ'—” Ìİ” Ìİ” Ìİ” Ìİ”  Ìİ”& Ìİ"”' Ìİ#”” ÌŞ” ÌŞ” ÌŞ” ÌŞ’” Ìß” Ìß”” Ìá
+” Ìá” Ìá” Ìá&˜” Ìâ” Ìâ” Ìâ” Ìâ*” Ìâ.”  Ìâ3”" ÌâÌE”# ÌâÌF™” Ìã” Ìã” Ìã	” Ìã” Ìã” Ìã” Ìã ” Ìã"” Ìã$”” Ìä” Ìä
+” Ìä” Ìä!–” Ìå” Ìå” Ìå”! Ìå”" Ìå”- Ìå%Ü ” Ìæ” Ìæ” Ìæ” Ìæ” Ìæ”% Ìæ”& Ìæ”' Ìæ”( Ìæ ”, Ìæ$”- Ìæ%”8 Ìæ0”9 Ìæ1”: Ìæ2”; Ìæ3”? Ìæ7”Ì@ Ìæ8”ÌH ÌæÌ@Ü ” Ìç” Ìç”  Ìç”$ Ìç”% Ìç”+ Ìç#”, Ìç$”- Ìç%”. Ìç&”3 Ìç+”4 Ìç,”5 Ìç-”6 Ìç.”7 Ìç/”; Ìç3”< Ìç4”ÌD Ìç<”ÌI ÌçÌA”ÌK ÌçÌC”ÌL ÌçÌD”ÌM ÌçÌE”ÌN ÌçÌF”ÌR ÌçÌJ”ÌS ÌçÌK”ÌT ÌçÌL”ÌU ÌçÌM”ÌZ ÌçÌR”Ì[ ÌçÌS’” Ìè” Ìè–” Ìé” Ìé” Ìé” Ìé” Ìé”! Ìé•” Ìê” Ìê” Ìê” Ìê”# ÌêÜ ” Ìë
+” Ìë” Ìë” Ìë”  Ìë”' Ìë”( Ìë”, Ìë"”. Ìë$”6 Ìë,”7 Ìë-”< Ìë2”> Ìë4”ÌB Ìë8”ÌC Ìë9”ÌH Ìë>”ÌJ ÌëÌ@”ÌN ÌëÌD”ÌP ÌëÌF”ÌT ÌëÌJ”ÌU ÌëÌK”Ì[ ÌëÌQ”Ì\ ÌëÌR”Ì] ÌëÌS’” Ìì
+” Ìì•” Ìí” Ìí” Ìí” Ìí”( Ìí Ü ” Ìî
+” Ìî” Ìî” Ìî”  Ìî”' Ìî”( Ìî”, Ìî"”. Ìî$”6 Ìî,”7 Ìî-”< Ìî2”> Ìî4”ÌB Ìî8”ÌC Ìî9”ÌH Ìî>”ÌJ ÌîÌ@”ÌO ÌîÌE”ÌQ ÌîÌG”ÌU ÌîÌK”ÌV ÌîÌL”Ì\ ÌîÌR”Ì] ÌîÌS”Ì^ ÌîÌT’” Ìï
+” Ìï•” Ìğ” Ìğ” Ìğ” Ìğ”& ÌğÜ ” Ìñ
+” Ìñ” Ìñ” Ìñ”  Ìñ”' Ìñ”( Ìñ”, Ìñ"”. Ìñ$”6 Ìñ,”7 Ìñ-”< Ìñ2”> Ìñ4”ÌB Ìñ8”ÌC Ìñ9”ÌF Ìñ<”ÌH Ìñ>”ÌM ÌñÌC”ÌO ÌñÌE”ÌS ÌñÌI”ÌT ÌñÌJ”ÌZ ÌñÌP”Ì[ ÌñÌQ”Ì\ ÌñÌR’” Ìò
+” Ìò•” Ìó” Ìó” Ìó” Ìó”# ÌóÜ ” Ìô
+” Ìô” Ìô” Ìô”  Ìô”' Ìô”( Ìô”, Ìô"”. Ìô$”6 Ìô,”7 Ìô-”< Ìô2”> Ìô4”ÌB Ìô8”ÌC Ìô9”ÌH Ìô>”ÌJ ÌôÌ@”ÌO ÌôÌE”ÌQ ÌôÌG”ÌU ÌôÌK”ÌV ÌôÌL”Ì\ ÌôÌR”Ì] ÌôÌS”Ì^ ÌôÌT’” Ìõ
+” Ìõ•” Ìö” Ìö” Ìö” Ìö”( Ìö Ü ” Ì÷
+” Ì÷” Ì÷” Ì÷”  Ì÷”' Ì÷”( Ì÷”, Ì÷"”. Ì÷$”6 Ì÷,”7 Ì÷-”< Ì÷2”> Ì÷4”ÌB Ì÷8”ÌC Ì÷9”ÌH Ì÷>”ÌJ Ì÷Ì@”ÌO Ì÷ÌE”ÌQ Ì÷ÌG”ÌU Ì÷ÌK”ÌV Ì÷ÌL”Ì\ Ì÷ÌR”Ì] Ì÷ÌS”Ì^ Ì÷ÌT’” Ìø
+” Ìø•” Ìù” Ìù” Ìù” Ìù”( Ìù Ü ” Ìú
+” Ìú” Ìú” Ìú”  Ìú”' Ìú”( Ìú”, Ìú"”. Ìú$”6 Ìú,”7 Ìú-”< Ìú2”> Ìú4”ÌB Ìú8”ÌC Ìú9”ÌH Ìú>”ÌJ ÌúÌ@”ÌN ÌúÌD”ÌP ÌúÌF”ÌT ÌúÌJ”ÌU ÌúÌK”Ì[ ÌúÌQ”Ì\ ÌúÌR”Ì] ÌúÌS’” Ìû
+” Ìû•” Ìü” Ìü” Ìü” Ìü”! ÌüÜ ” Ìı
+” Ìı” Ìı” Ìı”  Ìı”' Ìı”( Ìı”, Ìı"”. Ìı$”6 Ìı,”7 Ìı-”: Ìı0”< Ìı2”Ì@ Ìı6”ÌA Ìı7”ÌE Ìı;”ÌG Ìı=”ÌL ÌıÌB”ÌN ÌıÌD”ÌR ÌıÌH”ÌS ÌıÌI”ÌY ÌıÌO”ÌZ ÌıÌP”Ì[ ÌıÌQ’” Ìş
+” Ìş’” Ìÿ” Ìÿ•” Í ” Í ” Í ” Í ”$ Í Ü ” Í
+” Í” Í” Í”  Í”' Í”( Í”, Í"”. Í$”6 Í,”7 Í-”= Í3”? Í5”ÌC Í9”ÌD Í:”ÌI Í?”ÌK ÍÌA”ÌP ÍÌF”ÌR ÍÌH”ÌV ÍÌL”ÌW ÍÌM”Ì] ÍÌS”Ì^ ÍÌT”Ì_ ÍÌU’” Í
+” Í’” Í” Í•” Í” Í” Í” Í”% ÍÜ ” Í
+” Í” Í” Í”  Í”' Í”( Í”, Í"”. Í$”6 Í,”7 Í-”> Í4”Ì@ Í6”ÌD Í:”ÌE Í;”ÌH Í>”ÌJ ÍÌ@”ÌO ÍÌE”ÌQ ÍÌG”ÌU ÍÌK”ÌV ÍÌL”Ì\ ÍÌR”Ì] ÍÌS”Ì^ ÍÌT’” Í
+” Í‘” Í’” Í
+” Í‘” Í	˜” Í
+” Í
+” Í
+” Í
+” Í
+” Í
+” Í
+”  Í
+”” Í”	 Í”
+ Í” ÍÜ ” Í” Í
+” Í” Í” Í” Í” Í” Í” Í”6 Í2”9 Í5”= Í9”> Í:”ÌG ÍÌC”ÌH ÍÌD”ÌP ÍÌL”ÌQ ÍÌM”ÌR ÍÌN”ÌS ÍÌO”” Í” Í” Í” Í’” Í” Í‘” Í–”  Í ” Í” Í” Í” Í” ÍÔrH–§version¤file§sources®sourcesContent¥names¨mappingsÀ‘À‘ÀÜ‘”    ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”  	 ‘”  
+ ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”   ‘”    ‘”  ! ‘”  " ‘”  # ‘”  $ ‘”  % ‘”  & ‘”  ' ‘”  ( ‘”  ) ‘”  * ‘”  + ‘”  , ‘”  - ‘”  . ‘”  / ‘”  0 ‘”  1 ‘”  2 ‘”  3 ‘”  4 ‘”  5 ‘”  6 ‘”  7 ‘”  8 ‘”  9 ‘”  : ‘”  ; ‘”  < ‘”  = ‘”  > ‘”  ? ‘”  Ì@ ‘”  ÌA ‘”  ÌB ‘”  ÌC ‘”  ÌD ‘”  ÌE ‘”  ÌF ‘”  ÌG ‘”  ÌH ‘”  ÌI ‘”  ÌJ ‘”  ÌK ‘”  ÌL ‘”  ÌM ‘”  ÌN ‘”  ÌO ‘”  ÌP ‘”  ÌQ ‘”  ÌR ‘”  ÌS ‘”  ÌT ‘”  ÌU ‘”  ÌV ‘”  ÌW ‘”  ÌX ‘”  ÌY ‘”  ÌZ ‘”  Ì[ ‘”  Ì\ ‘”  Ì] ‘”  Ì^ ‘”  Ì_ ‘”  Ì` ‘”  Ìa ‘”  Ìb ‘”  Ìc ‘”  Ìd ‘”  Ìe ‘”  Ìf ‘”  Ìg ‘”  Ìh ‘”  Ìi ‘”  Ìj ‘”  Ìk ‘”  Ìl ‘”  Ìm ‘”  Ìn ‘”  Ìo ‘”  Ìp ‘”  Ìq ‘”  Ìr ‘”  Ìs ‘”  Ìt ‘”  Ìu ‘”  Ìv ‘”  Ìw ‘”  Ìx ‘”  Ìy ‘”  Ìz ‘”  Ì{ ‘”  Ì| ‘”  Ì} ‘”  Ì~ ‘”  Ì ‘”  Ì€ ‘”  Ì ‘”  Ì‚ ‘”  Ìƒ ‘”  Ì„ ‘”  Ì… ‘”  Ì† ‘”  Ì‡ ‘”  Ìˆ ‘”  Ì‰ ‘”  ÌŠ ‘”  Ì‹ ‘”  ÌŒ ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì ‘”  Ì‘ ‘”  Ì’ ‘”  Ì“ ‘”  Ì” ‘”  Ì• ‘”  Ì– ‘”  Ì— ‘”  Ì˜ ‘”  Ì™ ‘”  Ìš ‘”  Ì› ‘”  Ìœ ‘”  Ì ‘”  Ì ‘”  ÌŸ ‘”  Ì  ‘”  Ì¡ ‘”  Ì¢ ‘”  Ì£ ‘”  Ì¤ ‘”  Ì¥ ‘”  Ì¦ ‘”  Ì§ ‘”  Ì¨ ‘”  Ì© ‘”  Ìª ‘”  Ì« ‘”  Ì¬ ‘”  Ì­ ‘”  Ì® ‘”  Ì¯ ‘”  Ì° ‘”  Ì± ‘”  Ì² ‘”  Ì³ ‘”  Ì´ ‘”  Ìµ ‘”  Ì¶ ‘”  Ì· ‘”  Ì¸ ‘”  Ì¹ ‘”  Ìº ‘”  Ì» ‘”  Ì¼ ‘”  Ì½ ‘”  Ì¾ ‘”  Ì¿ ‘”  ÌÀ ‘”  ÌÁ ‘”  ÌÂ ‘”  ÌÃ ‘”  ÌÄ ‘”  ÌÅ ‘”  ÌÆ ‘”  ÌÇ ‘”  ÌÈ ‘”  ÌÉ ‘”  ÌÊ ‘”  ÌË ‘”  ÌÌ ‘”  ÌÍ ‘”  ÌÎ ‘”  ÌÏ ‘”  ÌĞ ‘”  ÌÑ ‘”  ÌÒ ‘”  ÌÓ ‘”  ÌÔ ‘”  ÌÕ ‘”  ÌÖ ‘”  Ì× ‘”  ÌØ ‘”  ÌÙ ‘”  ÌÚ ‘”  ÌÛ ‘”  ÌÜ ‘”  Ìİ ‘”  ÌŞ ‘”  Ìß ‘”  Ìà ‘”  Ìá ‘”  Ìâ ‘”  Ìã ‘”  Ìä ‘”  Ìå ‘”  Ìæ ‘”  Ìç ‘”  Ìè ‘”  Ìé ‘”  Ìê ‘”  Ìë ‘”  Ìì ‘”  Ìí ‘”  Ìî ‘”  Ìï ‘”  Ìğ ‘”  Ìñ ‘”  Ìò ‘”  Ìó ‘”  Ìô ‘”  Ìõ ‘”  Ìö ‘”  Ì÷ ‘”  Ìø ‘”  Ìù ‘”  Ìú ‘”  Ìû ‘”  Ìü ‘”  Ìı ‘”  Ìş ‘”  Ìÿ ‘”  Í  ‘”  Í ÔrI’§missing¦pluginÃ¦genAbcÂÔ  ÔrJ”²dynamicImportCache¹exportAllDeclarationCache»exportNamedDeclarationCache«importCacheÔrK•¤type¥start£endªspecifiers¦source±ImportDeclarationÍiÍ¦‘ÔrL”¤type¥start£end¥local¶ImportDefaultSpecifierÍpÍÔrM”¤type¥start£end¤nameªIdentifierÍpÍ¯formBindingDataÔrN•¤type¥start£end¥value£raw§LiteralÍ…Í¥¾@ohos.app.form.formBindingDataÙ "@ohos.app.form.formBindingData"K±ImportDeclarationÍ¨Íß‘L¶ImportDefaultSpecifierÍ¯Í»MªIdentifierÍ¯Í»¬formProviderN§LiteralÍÁÍŞ»@ohos.app.form.formProvider½"@ohos.app.form.formProvider"K±ImportDeclarationÍáÍ‘L¶ImportDefaultSpecifierÍèÍğMªIdentifierÍèÍğ¨RdbUtilsN§LiteralÍöÍ¸../database/rdb/RdbUtilsº'../database/rdb/RdbUtils'K±ImportDeclarationÍÍL‘L¶ImportDefaultSpecifierÍÍ%MªIdentifierÍÍ%«FormInfoApiN§LiteralÍ+ÍK¾../database/tables/FormInfoApiÙ '../database/tables/FormInfoApi'K±ImportDeclarationÍNÍ…‘L¶ImportDefaultSpecifierÍUÍ_MªIdentifierÍUÍ_ªDayInfoApiN§LiteralÍeÍ„½../database/tables/DayInfoApi¿'../database/tables/DayInfoApi'K±ImportDeclarationÍ‡ÍÀ‘L¶ImportDefaultSpecifierÍÍ™MªIdentifierÍÍ™«TaskInfoApiN§LiteralÍŸÍ¿¾../database/tables/TaskInfoApiÙ '../database/tables/TaskInfoApi'K±ImportDeclarationÍÂÍş‘L¶ImportDefaultSpecifierÍÉÍ×MªIdentifierÍÉÍ×®AgencyCardInfoN§LiteralÍİÍı¾../../viewmodel/AgencyCardInfoÙ '../../viewmodel/AgencyCardInfo'K±ImportDeclarationÍ Í%‘L¶ImportDefaultSpecifierÍÍMªIdentifierÍÍ¦LoggerN§LiteralÍÍ$¯../utils/Logger±'../utils/Logger'K±ImportDeclarationÍ'Íg‘L¶ImportDefaultSpecifierÍ.Í>MªIdentifierÍ.Í>°ProgressCardInfoN§LiteralÍDÍfÙ ../../viewmodel/ProgressCardInfoÙ"'../../viewmodel/ProgressCardInfo'K±ImportDeclarationÍiÍ‘ÔrO•¤type¥start£end¨imported¥local¯ImportSpecifierÍrÍzMªIdentifierÍrÍz¨taskTypeMªIdentifierÍrÍz¨taskTypeN§LiteralÍ‚Íœ¸../../viewmodel/TaskInfoº'../../viewmodel/TaskInfo'K±ImportDeclarationÍŸÍ
+“O¯ImportSpecifierÍ¨Í¹MªIdentifierÍ¨Í¹±columnDayInfoListMªIdentifierÍ¨Í¹±columnDayInfoListO¯ImportSpecifierÍ»ÍÑMªIdentifierÍ»ÍÑ¶columnTaskInfoInfoListMªIdentifierÍ»ÍÑ¶columnTaskInfoInfoListO¯ImportSpecifierÍÓÍåMªIdentifierÍÓÍå²columnFormInfoListMªIdentifierÍÓÍå²columnFormInfoListN§LiteralÍíÍ	º../../model/RdbColumnModel¼'../../model/RdbColumnModel'K±ImportDeclarationÍÍd“O¯ImportSpecifierÍÍ-MªIdentifierÍÍ$¯CommonConstantsMªIdentifierÍ(Í-¥ConstO¯ImportSpecifierÍ/Í3MªIdentifierÍ/Í3¤UnitMªIdentifierÍ/Í3¤UnitO¯ImportSpecifierÍ5Í=MªIdentifierÍ5Í=¨TaskTypeMªIdentifierÍ5Í=¨TaskTypeN§LiteralÍEÍc¼../constants/CommonConstants¾'../constants/CommonConstants'K±ImportDeclarationÍfÍ–‘O¯ImportSpecifierÍoÍ|MªIdentifierÍoÍ|­GlobalContextMªIdentifierÍoÍ|­GlobalContextN§LiteralÍ„Í•¯./GlobalContext±'./GlobalContext'
